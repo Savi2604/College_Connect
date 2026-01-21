@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Leaves - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
+        h2 { color: #008080; border-bottom: 2px solid #008080; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        
+        .leave-card { 
+            background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #f39c12;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .student-info p { margin: 5px 0; font-size: 14px; }
+        .student-id { color: #008080; font-weight: bold; font-size: 16px; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .approve { color: white; background: #27ae60; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .reject { color: white; background: #e74c3c; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .approve:hover { background: #1e8449; }
+        .reject:hover { background: #c0392b; }
+        
+        #leaveList:empty::after { content: "No pending requests at the moment."; color: #888; display: block; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h2><i class="fas fa-tasks"></i> Pending Leave Requests</h2>
+    <div id="leaveList">Loading requests...</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Path should match student side: 'leave_requests'
+        const leaveRef = ref(db, 'leave_requests/');
+
+        onValue(leaveRef, (snapshot) => {
+            const listDiv = document.getElementById('leaveList');
+            listDiv.innerHTML = "";
+            
+            if (!snapshot.exists()) {
+                listDiv.innerHTML = "<p style='text-align:center;'>No requests found.</p>";
+                return;
+            }
+
+            snapshot.forEach(child => {
+                const data = child.val();
+                // Only show Pending requests for Admin to take action
+                if(data.status === "Pending") {
+                    listDiv.innerHTML += `
+                        <div class="leave-card">
+                            <div class="student-info">
+                                <p class="student-id"><i class="fas fa-user"></i> ${data.studentID || data.studentId}</p>
+                                <p><strong>Type:</strong> ${data.type || 'General'}</p>
+                                <p><strong>Date:</strong> ${data.date}</p>
+                                <p><strong>Reason:</strong> ${data.reason}</p>
+                            </div>
+                            <div class="btn-group">
+                                <button class="approve" onclick="updateStatus('${child.key}', 'Approved')"><i class="fas fa-check"></i> Approve</button>
+                                <button class="reject" onclick="updateStatus('${child.key}', 'Rejected')"><i class="fas fa-times"></i> Reject</button>
+                            </div>
+                        </div>`;
+                }
+            });
+        });
+
+        window.updateStatus = function(requestId, newStatus) {
+            const requestPath = 'leave_requests/' + requestId;
+            update(ref(db, requestPath), { status: newStatus })
+            .then(() => {
+                alert("Request has been " + newStatus);
+            })
+            .catch((error) => {
+                console.error("Update failed: ", error);
+            });
+        }
+    </script>
+</body>
+</html>

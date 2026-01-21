@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - GCEE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: #f4f7f6; }
+        .header { background: #333; color: white; padding: 20px; text-align: center; position: relative; }
+        .admin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 20px; }
+        .admin-card { 
+            background: white; padding: 30px; border-radius: 15px; 
+            text-align: center; text-decoration: none; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: 0.3s; 
+        }
+        .admin-card:hover { transform: translateY(-5px); background: #e8fafa; }
+        .admin-card i { font-size: 40px; color: #008080; margin-bottom: 15px; }
+        .admin-card h3 { color: #333; }
+        
+        /* Logout Button Style */
+        .logout-btn { position: absolute; top: 25px; right: 25px; color: white; cursor: pointer; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Admin Management</h1>
+        <i class="fas fa-power-off logout-btn" onclick="logout()"></i>
+    </div>
+
+    <div class="admin-grid">
+        <a href="upload-attendance.html" class="admin-card">
+            <i class="fas fa-user-check"></i>
+            <h3>Upload Attendance</h3>
+        </a>
+        <a href="post-announcement.html" class="admin-card">
+            <i class="fas fa-bullhorn"></i>
+            <h3>Post Announcement</h3>
+        </a>
+        <a href="upload-marks.html" class="admin-card">
+            <i class="fas fa-file-invoice"></i>
+            <h3>Upload Marks</h3>
+        </a>
+        
+        <a href="advisor-leave.html" class="admin-card">
+            <i class="fas fa-envelope-open-text"></i>
+            <h3>Leave Requests</h3>
+        </a>
+
+        <a href="upload-notes.html" class="admin-card">
+            <i class="fas fa-book"></i>
+            <h3>Upload Notes</h3>
+        </a>
+    </div>
+
+    <script>
+        function logout() {
+            if(confirm("Are you sure you want to logout?")) {
+                window.location.href = "../index.html"; // Login page-ku poga
+            }
+        }
+    </script>
+</body>
+</html>

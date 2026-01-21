@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Marks - College Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; padding: 20px; }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #008080; }
+        .marks-card { 
+            background: white; padding: 20px; border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { color: #008080; font-size: 14px; text-transform: uppercase; }
+        .score { font-weight: bold; color: #2c3e50; }
+        .percentage { 
+            display: inline-block; padding: 4px 8px; border-radius: 5px; 
+            background: #e0f2f2; color: #008080; font-size: 12px; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" style="color: #008080;"><i class="fas fa-arrow-left fa-lg"></i></a>
+        <h2>Examination Results</h2>
+    </div>
+
+    <div class="marks-card">
+        <table id="marksTable">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="marksBody">
+                </tbody>
+        </table>
+        <div id="noData" style="display:none; text-align:center; padding: 20px;">No marks updated yet.</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const marksBody = document.getElementById('marksBody');
+        const studentID = "STU001"; // Manu's ID
+
+        onValue(ref(db, 'marks/' + studentID), (snapshot) => {
+            marksBody.innerHTML = "";
+            if (snapshot.exists()) {
+                document.getElementById('noData').style.display = "none";
+                snapshot.forEach(child => {
+                    const m = child.val();
+                    marksBody.innerHTML += `
+                        <tr>
+                            <td><b>${m.subject}</b></td>
+                            <td class="score">${m.score}</td>
+                            <td>${m.total}</td>
+                        </tr>`;
+                });
+            } else {
+                document.getElementById('noData').style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCEE Admin - Organized Upload</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .form-card { 
+            background: white; max-width: 550px; margin: 30px auto; padding: 30px; 
+            border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+        }
+        h2 { color: #008080; text-align: center; margin-bottom: 20px; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input, select { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; 
+            border-radius: 8px; box-sizing: border-box; font-size: 14px;
+        }
+        .btn { 
+            background: #008080; color: white; width: 100%; padding: 15px; 
+            border: none; border-radius: 10px; font-size: 16px; cursor: pointer; 
+            font-weight: bold; margin-top: 10px; transition: 0.3s;
+        }
+        .btn:hover { background: #00ced1; }
+        #msg { text-align: center; margin-top: 15px; font-weight: bold; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2><i class="fas fa-file-export"></i> Post Study Material</h2>
+        <form id="notesForm">
+            <div class="group">
+                <label>Subject Name</label>
+                <input type="text" id="subject" placeholder="e.g. Data Structures" required>
+            </div>
+
+            <div class="group">
+                <label>Department</label>
+                <select id="dept" required>
+                    <option value="">-- Select Department --</option>
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="MECH">MECH</option>
+                    <option value="CIVIL">CIVIL</option>
+		    <option value="IT">IT</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label>Year</label>
+                <select id="year" required>
+                    <option value="">-- Select Year --</option>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label>Google Drive Link</label>
+                <input type="url" id="driveUrl" placeholder="Paste 'Anyone with link' URL here" required>
+            </div>
+            
+            <button type="submit" class="btn">Post to Students</button>
+        </form>
+        <p id="msg"></p>
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin Panel</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Unga specific Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('notesForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('msg');
+
+            const notesData = {
+                subject: document.getElementById('subject').value,
+                dept: document.getElementById('dept').value,
+                year: document.getElementById('year').value,
+                fileUrl: document.getElementById('driveUrl').value,
+                date: new Date().toLocaleDateString()
+            };
+
+            // Database-la 'study_materials' nu oru node-kulla save pandrom
+            push(ref(db, 'study_materials'), notesData).then(() => {
+                msg.style.color = "green";
+                msg.innerText = "✅ Successfully posted for " + notesData.dept + " " + notesData.year + " year!";
+                document.getElementById('notesForm').reset();
+            }).catch((err) => {
+                msg.style.color = "red";
+                msg.innerText = "❌ Error: " + err.message;
+            });
+        });
+    </script>
+</body>
+</html>

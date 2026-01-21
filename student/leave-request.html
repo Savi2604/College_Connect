@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Leave - College Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; padding: 20px; }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #008080; }
+        .form-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 600px; margin: auto; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        
+        .auto-info { 
+            background: #e6f4f4; padding: 12px; border-radius: 8px; 
+            font-weight: bold; color: #008080; border: 1px dashed #008080;
+            margin-bottom: 20px; font-size: 14px;
+        }
+
+        input, textarea, select { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; 
+            box-sizing: border-box; font-size: 14px;
+        }
+
+        .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .submit-btn { 
+            background: #008080; color: white; width: 100%; padding: 15px; 
+            border: none; border-radius: 10px; font-size: 16px; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .submit-btn:hover { background: #006666; }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" style="color: #008080;"><i class="fas fa-arrow-left fa-lg"></i></a>
+        <h2>Apply for Leave</h2>
+    </div>
+
+    <div class="form-card">
+        <div id="studentProfile" class="auto-info">
+            <i class="fas fa-sync fa-spin"></i> Fetching profile details...
+        </div>
+
+        <form id="leaveForm">
+            <div class="input-group">
+                <label>Leave Type</label>
+                <select id="leaveType" required>
+                    <option value="Sick Leave">Sick Leave</option>
+                    <option value="On Duty (OD)">On Duty (OD)</option>
+                    <option value="Personal Reason">Personal Reason</option>
+                </select>
+            </div>
+
+            <div class="date-grid">
+                <div class="input-group">
+                    <label>From Date</label>
+                    <input type="date" id="fromDate" required>
+                </div>
+                <div class="input-group">
+                    <label>To Date</label>
+                    <input type="date" id="toDate" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Reason</label>
+                <textarea id="reason" rows="4" placeholder="Explain your reason..." required></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn" disabled>Submit Request</button>
+        </form>
+        <div id="statusMsg"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const loggedInID = sessionStorage.getItem("studentID") || "STU001";
+        let studentDetails = { name: "Student", dept: "IT", year: "3" }; 
+
+        async function initProfile() {
+            const profileDiv = document.getElementById('studentProfile');
+            const btn = document.getElementById('submitBtn');
+            
+            try {
+                const snapshot = await get(ref(db, `users/${loggedInID}`));
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    studentDetails.name = data.name || "Student";
+                    studentDetails.dept = data.dept || "IT"; // "undefined" fix
+                    studentDetails.year = data.year || "3";
+                }
+                profileDiv.innerHTML = `<i class="fas fa-user-check"></i> Applying as: <b>${studentDetails.name} (${studentDetails.dept} - Year ${studentDetails.year})</b>`;
+                btn.disabled = false;
+            } catch (e) {
+                profileDiv.innerHTML = "Error loading profile.";
+            }
+        }
+
+        initProfile();
+
+        document.getElementById('leaveForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('statusMsg');
+            const from = document.getElementById('fromDate').value;
+            const to = document.getElementById('toDate').value;
+
+            // Date Validation
+            if (new Date(to) < new Date(from)) {
+                alert("To Date must be after From Date!");
+                return;
+            }
+            
+            // Database-la Advisor read panna 'fromDate' matrum 'toDate' rendu node-um anupuroom
+            const leaveData = {
+                studentID: loggedInID,
+                name: studentDetails.name,
+                dept: studentDetails.dept,
+                year: studentDetails.year,
+                type: document.getElementById('leaveType').value,
+                fromDate: from,
+                toDate: to,
+                reason: document.getElementById('reason').value,
+                status: "Pending",
+                timestamp: new Date().toISOString()
+            };
+
+            const newRequestRef = push(ref(db, 'leaverequests'));
+            set(newRequestRef, leaveData).then(() => {
+                msg.style.color = "green";
+                msg.innerText = "Request Sent Successfully!";
+                document.getElementById('leaveForm').reset();
+            });
+        });
+    </script>
+</body>
+</html>

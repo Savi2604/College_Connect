@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration - College Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .reg-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        .reg-card h2 { color: #008080; text-align: center; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .btn-reg { width: 100%; background: #008080; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .links { text-align: center; margin-top: 15px; font-size: 14px; }
+        .links a { color: #008080; text-decoration: none; font-weight: bold; }
+        #studentFields { display: block; } /* Default Student options */
+    </style>
+</head>
+<body>
+
+<div class="reg-card">
+    <h2><i class="fas fa-user-plus"></i> Register</h2>
+    
+    <div class="form-group">
+        <label>Register As</label>
+        <select id="regRole" onchange="toggleFields()">
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Enter name">
+    </div>
+
+    <div class="form-group">
+        <label>User ID (Username)</label>
+        <input type="text" id="regID" placeholder="e.g. STU101 or ADM01">
+    </div>
+
+    <div id="studentFields">
+        <div class="form-group">
+            <label>Department</label>
+            <select id="regDept">
+                <option value="IT">IT</option>
+                <option value="CSE">CSE</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="MECH">MECH</option>
+                <option value="AUTO">AUTO</option>
+                <option value="CIVIL">CIVIL</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Current Year</label>
+            <select id="regYear">
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Set password">
+    </div>
+
+    <button class="btn-reg" onclick="registerUser()">Create Account</button>
+    <div class="links">Already have an account? <a href="login.html">Login</a></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+        authDomain: "college-connect-2cd42.firebaseapp.com",
+        databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "college-connect-2cd42",
+        storageBucket: "college-connect-2cd42.firebasestorage.app",
+        messagingSenderId: "16394931571",
+        appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Show/Hide fields based on role
+    window.toggleFields = () => {
+        const role = document.getElementById('regRole').value;
+        document.getElementById('studentFields').style.display = (role === 'student') ? 'block' : 'none';
+    }
+
+    window.registerUser = async function() {
+        const role = document.getElementById('regRole').value;
+        const name = document.getElementById('regName').value;
+        const id = document.getElementById('regID').value.trim();
+        const pass = document.getElementById('regPass').value;
+        
+        // Student-ku mattumae Dept/Year mukkiam
+        const dept = (role === 'student') ? document.getElementById('regDept').value : "ADMIN";
+        const year = (role === 'student') ? document.getElementById('regYear').value : "N/A";
+
+        if(!name || !id || !pass) { alert("Fill all details!"); return; }
+
+        try {
+            const userRef = ref(db, `users/${id}`);
+            const snap = await get(userRef);
+            if(snap.exists()) { alert("ID already taken!"); return; }
+
+            await set(userRef, { name, id, role, dept, year, password: pass });
+            alert("Registration Success as " + role);
+            window.location.href = "login.html";
+        } catch (e) { alert("Error!"); }
+    }
+</script>
+</body>
+</html>

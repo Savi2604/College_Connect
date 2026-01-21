@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials - GCEE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #008080; --bg: #f8fbfb; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .header h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .info-pill { 
+            display: inline-block; background: white; padding: 8px 15px; 
+            border-radius: 20px; margin: 10px 0; font-weight: bold; color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #notes-container { display: grid; gap: 15px; margin-top: 20px; }
+        .note-card {
+            background: white; padding: 18px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary);
+        }
+        .btn-view {
+            background: var(--primary); color: white; padding: 8px 18px;
+            border-radius: 8px; text-decoration: none; font-weight: bold;
+        }
+        .no-data { text-align: center; margin-top: 50px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2><i class="fas fa-book"></i> My Study Materials</h2>
+        <div class="info-pill" id="profile-info">Syncing with IT - Year 3...</div>
+    </div>
+
+    <div id="notes-container">
+        <p style="text-align: center;">Searching for materials...</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Force Testing: Unga database-la irukura sariyaana values inga podunga
+        const TEST_DEPT = "IT"; 
+        const TEST_YEAR = "3"; 
+
+        function loadNotes() {
+            const container = document.getElementById('notes-container');
+            const infoDiv = document.getElementById('profile-info');
+
+            // Notes fetch panna direct logic
+            const notesRef = ref(db, 'study_materials');
+            
+            onValue(notesRef, (snapshot) => {
+                container.innerHTML = "";
+                let found = false;
+
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const data = child.val();
+                        
+                        // Firebase-la irukura Dept and Year check
+                        if (data.dept === TEST_DEPT && data.year.toString() === TEST_YEAR) {
+                            found = true;
+                            container.innerHTML += `
+                                <div class="note-card">
+                                    <div>
+                                        <b style="font-size:17px;">${data.subject}</b><br>
+                                        <small style="color:#666;">${data.date} • ${data.dept}</small>
+                                    </div>
+                                    <a href="${data.fileUrl}" target="_blank" class="btn-view">View</a>
+                                </div>`;
+                        }
+                    });
+                }
+
+                infoDiv.innerText = `Subject List for ${TEST_DEPT} - Year ${TEST_YEAR}`;
+
+                if (!found) {
+                    container.innerHTML = `<div class="no-data">No notes found for ${TEST_DEPT} Year ${TEST_YEAR}</div>`;
+                }
+            });
+        }
+
+        loadNotes();
+    </script>
+</body>
+</html>

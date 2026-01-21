@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Upload Marks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .form-card { 
+            background: white; max-width: 500px; margin: auto; padding: 30px; 
+            border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+        }
+        h2 { color: #008080; text-align: center; margin-bottom: 25px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .submit-btn { 
+            background: #008080; color: white; width: 100%; padding: 15px; 
+            border: none; border-radius: 10px; font-size: 16px; cursor: pointer; 
+            font-weight: bold; margin-top: 10px;
+        }
+        #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2><i class="fas fa-file-invoice"></i> Upload Student Marks</h2>
+        <form id="marksForm">
+            <div class="input-group">
+                <label>Student ID</label>
+                <input type="text" id="stuID" placeholder="e.g., STU001" required>
+            </div>
+            <div class="input-group">
+                <label>Subject Name</label>
+                <input type="text" id="subject" placeholder="e.g., Data Structures" required>
+            </div>
+            <div class="input-group">
+                <label>Obtained Marks</label>
+                <input type="number" id="score" placeholder="e.g., 85" required>
+            </div>
+            <div class="input-group">
+                <label>Total Marks</label>
+                <input type="number" id="total" value="100" required>
+            </div>
+            <button type="submit" class="submit-btn">Submit Marks</button>
+        </form>
+        <div id="statusMsg"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('marksForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const stuID = document.getElementById('stuID').value;
+            const msg = document.getElementById('statusMsg');
+
+            const marksData = {
+                subject: document.getElementById('subject').value,
+                score: document.getElementById('score').value,
+                total: document.getElementById('total').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // marks -> StudentID -> UniqueID
+            const marksRef = ref(db, 'marks/' + stuID);
+            const newMarkEntry = push(marksRef);
+
+            set(newMarkEntry, marksData)
+                .then(() => {
+                    msg.style.color = "green";
+                    msg.innerText = "Marks uploaded successfully for " + stuID;
+                    document.getElementById('marksForm').reset();
+                    document.getElementById('total').value = "100";
+                })
+                .catch((error) => {
+                    msg.style.color = "red";
+                    msg.innerText = "Error: " + error.message;
+                });
+        });
+    </script>
+</body>
+</html>

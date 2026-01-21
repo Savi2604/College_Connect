@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor Approval - GCEE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #008080; --bg: #f4f9f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; }
+        .header { background: var(--primary); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+        
+        .filter-section { background: white; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        select { padding: 8px 15px; border-radius: 5px; border: 1px solid #ddd; font-weight: bold; }
+
+        #leave-list { display: grid; gap: 15px; max-width: 800px; margin: auto; }
+        .request-card { background: white; padding: 20px; border-radius: 15px; border-left: 6px solid #ffd700; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        .info-row { margin-bottom: 8px; font-size: 15px; color: #444; }
+        .info-row b { color: #222; min-width: 80px; display: inline-block; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .approve-btn { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; }
+        .reject-btn { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1; }
+        
+        .empty-msg { text-align: center; padding: 40px; color: #888; }
+        .status-badge { float: right; padding: 4px 10px; border-radius: 20px; font-size: 12px; background: #fff3cd; color: #856404; font-weight: bold; border: 1px solid #ffeeba; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2><i class="fas fa-user-shield"></i> Advisor Leave Approval</h2>
+    </div>
+
+    <div class="filter-section">
+        <b>Select Department to View:</b>
+        <select id="deptFilter">
+            <option value="IT">IT</option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="MECH">MECH</option>
+        </select>
+    </div>
+
+    <div id="leave-list">
+        <p style="text-align: center;">Loading requests...</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const listContainer = document.getElementById('leave-list');
+        const filter = document.getElementById('deptFilter');
+
+        function fetchRequests() {
+            const requestsRef = ref(db, 'leaverequests');
+            
+            onValue(requestsRef, (snapshot) => {
+                listContainer.innerHTML = "";
+                let count = 0;
+
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const data = child.val();
+                        const reqId = child.key;
+
+                        // Only show "Pending" and match Department
+                        if (data.status === "Pending" && data.dept === filter.value) {
+                            count++;
+                            
+                            // DATE FIX: Student kitta irundhu varra fromDate & toDate-ah sethu display pandrom
+                            const displayDate = data.fromDate === data.toDate ? data.fromDate : `${data.fromDate} to ${data.toDate}`;
+
+                            listContainer.innerHTML += `
+                                <div class="request-card">
+                                    <span class="status-badge">${data.type}</span>
+                                    <div class="info-row"><b>Student:</b> ${data.name} (${data.studentID})</div>
+                                    <div class="info-row"><b>Reason:</b> ${data.reason}</div>
+                                    <div class="info-row" style="color:#008080;"><b>Date:</b> ${displayDate}</div>
+                                    
+                                    <div class="btn-group">
+                                        <button class="approve-btn" onclick="handleAction('${reqId}', 'Approved')">Approve</button>
+                                        <button class="reject-btn" onclick="handleAction('${reqId}', 'Rejected')">Reject</button>
+                                    </div>
+                                </div>`;
+                        }
+                    });
+                }
+
+                if (count === 0) {
+                    listContainer.innerHTML = `<div class="empty-msg">No pending leave requests for ${filter.value} department.</div>`;
+                }
+            });
+        }
+
+        // Action Function (Approve/Reject)
+        window.handleAction = (id, newStatus) => {
+            const reqRef = ref(db, `leaverequests/${id}`);
+            update(reqRef, { status: newStatus })
+                .then(() => alert(`Request ${newStatus}!`))
+                .catch((err) => alert("Error: " + err.message));
+        };
+
+        filter.addEventListener('change', fetchRequests);
+        fetchRequests();
+
+    </script>
+</body>
+</html>
