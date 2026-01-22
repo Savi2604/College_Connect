@@ -3,105 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcements</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Post Announcement - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f8fafc; padding-bottom: 30px; }
-        .header { 
-            background: linear-gradient(135deg, #008080 0%, #00ced1 100%); 
-            color: white; padding: 20px; display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .header a { color: white; text-decoration: none; }
-        .container { padding: 20px; max-width: 650px; margin: auto; }
-        .info-bar { background: #e2e8f0; padding: 8px 15px; border-radius: 5px; font-size: 12px; margin-bottom: 15px; color: #475569; display: flex; justify-content: space-between; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
         
-        .announcement-card { 
-            background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #00ced1;
+        /* Dropdown Style */
+        .multiselect-box {
+            border: 1px solid #ddd; border-radius: 8px; padding: 12px;
+            background: #fff; cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center; font-size: 14px;
         }
-        .announcement-card h3 { color: #1e293b; margin-bottom: 5px; }
-        .announcement-card p { color: #64748b; font-size: 14px; line-height: 1.5; }
-        .footer-info { display: flex; justify-content: space-between; margin-top: 15px; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 10px; }
-        .no-data { text-align: center; color: #94a3b8; margin-top: 50px; }
+        .options-container {
+            display: none; position: absolute; width: 100%;
+            background: white; border: 1px solid #ddd; border-radius: 8px;
+            margin-top: 5px; z-index: 10; max-height: 200px;
+            overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .options-container.active { display: block; }
+        .option-item {
+            padding: 10px; display: flex; align-items: center;
+            gap: 10px; border-bottom: 1px solid #f9f9f9; cursor: pointer;
+        }
+        .option-item:hover { background: #f0f7f7; }
+        .btn-send { width: 100%; background: #008080; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        .btn-send:hover { background: #006666; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <a href="index.html"><i class="fas fa-arrow-left fa-lg"></i></a>
-        <h2>Announcements</h2>
+<div class="container">
+    <h2><i class="fas fa-bullhorn" style="color: #008080;"></i> Post New Announcement</h2>
+    
+    <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="title" placeholder="Enter title...">
     </div>
 
-    <div class="container">
-        <div class="info-bar">
-            <span>Searching: <b id="d-dept">...</b></span>
-            <span>Year: <b id="d-year">...</b></span>
+    <div class="form-group">
+        <label>Message</label>
+        <textarea id="message" placeholder="Type message..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Target Departments</label>
+        <div class="multiselect-box" onclick="toggleDropdown('deptOptions')">
+            <span id="deptLabel">Select Departments</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
-        <div id="announcement-list">
-            <p style="text-align: center;">Loading...</p>
+        <div class="options-container" id="deptOptions">
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="IT" onchange="updateLabels()"> IT</label>
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="CSE" onchange="updateLabels()"> CSE</label>
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="ECE" onchange="updateLabels()"> ECE</label>
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="EEE" onchange="updateLabels()"> EEE</label>
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="MECH" onchange="updateLabels()"> MECH</label>
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="AUTO" onchange="updateLabels()"> AUTO</label>
+            <label class="option-item"><input type="checkbox" class="dept-cb" value="CIVIL" onchange="updateLabels()"> CIVIL</label>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    <div class="form-group">
+        <label>Target Year(s)</label>
+        <div class="multiselect-box" onclick="toggleDropdown('yearOptions')">
+            <span id="yearLabel">Select Year(s)</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="options-container" id="yearOptions">
+            <label class="option-item"><input type="checkbox" id="allYears" onclick="selectAllYears(this)"> <b>ALL YEARS</b></label>
+            <label class="option-item"><input type="checkbox" class="year-cb" value="1" onchange="updateLabels()"> 1st Year</label>
+            <label class="option-item"><input type="checkbox" class="year-cb" value="2" onchange="updateLabels()"> 2nd Year</label>
+            <label class="option-item"><input type="checkbox" class="year-cb" value="3" onchange="updateLabels()"> 3rd Year</label>
+            <label class="option-item"><input type="checkbox" class="year-cb" value="4" onchange="updateLabels()"> 4th Year</label>
+        </div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
-            authDomain: "college-connect-2cd42.firebaseapp.com",
-            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "college-connect-2cd42",
-            storageBucket: "college-connect-2cd42.firebasestorage.app",
-            messagingSenderId: "16394931571",
-            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+    <button class="btn-send" onclick="sendNotice()">Send Announcement</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+        authDomain: "college-connect-2cd42.firebaseapp.com",
+        databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "college-connect-2cd42",
+        storageBucket: "college-connect-2cd42.firebasestorage.app",
+        messagingSenderId: "16394931571",
+        appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.toggleDropdown = (id) => {
+        const el = document.getElementById(id);
+        const isActive = el.classList.contains('active');
+        document.querySelectorAll('.options-container').forEach(c => c.classList.remove('active'));
+        if(!isActive) el.classList.add('active');
+    }
+
+    window.selectAllYears = (source) => {
+        document.querySelectorAll('.year-cb').forEach(cb => cb.checked = source.checked);
+        updateLabels();
+    }
+
+    window.updateLabels = () => {
+        const depts = document.querySelectorAll('.dept-cb:checked').length;
+        const years = document.querySelectorAll('.year-cb:checked').length;
+        document.getElementById('deptLabel').innerText = depts > 0 ? `${depts} Selected` : "Select Departments";
+        document.getElementById('yearLabel').innerText = years > 0 ? `${years} Selected` : "Select Year(s)";
+    }
+
+    window.sendNotice = async function() {
+        const title = document.getElementById('title').value;
+        const msg = document.getElementById('message').value;
+        const selectedDepts = Array.from(document.querySelectorAll('.dept-cb:checked')).map(cb => cb.value);
+        const selectedYears = Array.from(document.querySelectorAll('.year-cb:checked')).map(cb => cb.value);
+
+        if(!title || !msg || selectedDepts.length === 0 || selectedYears.length === 0) {
+            alert("Ellathaiyum fill panni targets select pannunga brother!");
+            return;
+        }
+
+        const data = {
+            title, message: msg,
+            targetDepts: selectedDepts,
+            targetYears: selectedYears,
+            timestamp: Date.now(),
+            date: new Date().toLocaleDateString()
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        try {
+            await push(ref(db, 'announcements/'), data);
+            alert("Successfully sent!");
+            location.reload();
+        } catch (e) { alert("Error!"); }
+    }
 
-        // Clean values from session
-        const sDept = (sessionStorage.getItem("dept") || "All").trim();
-        const sYear = (sessionStorage.getItem("year") || "All").trim();
-
-        document.getElementById('d-dept').innerText = sDept;
-        document.getElementById('d-year').innerText = sYear;
-
-        const listDiv = document.getElementById('announcement-list');
-
-        onValue(ref(db, 'announcements'), (snapshot) => {
-            listDiv.innerHTML = "";
-            if (snapshot.exists()) {
-                const items = Object.values(snapshot.val()).sort((a, b) => b.timestamp - a.timestamp);
-                let count = 0;
-
-                items.forEach(item => {
-                    // Mukkiamana Logic: ADMIN or All or Exact Match
-                    const isDeptOk = (sDept === "ADMIN" || sDept === "All") || 
-                                     (item.targetDepts && (item.targetDepts.includes(sDept) || item.targetDepts.includes("All")));
-                    
-                    const isYearOk = (sYear === "All" || sYear === "N/A") || 
-                                     (item.targetYears && (item.targetYears.includes(sYear) || item.targetYears.includes("All")));
-
-                    if (isDeptOk && isYearOk) {
-                        count++;
-                        listDiv.innerHTML += `
-                            <div class="announcement-card">
-                                <h3>${item.title}</h3>
-                                <p>${item.message}</p>
-                                <div class="footer-info">
-                                    <span><i class="far fa-clock"></i> ${new Date(item.timestamp).toLocaleDateString()}</span>
-                                    <span><i class="fas fa-user-shield"></i> Official</span>
-                                </div>
-                            </div>`;
-                    }
-                });
-                if(count === 0) listDiv.innerHTML = '<p class="no-data">No matching announcements found.</p>';
-            } else {
-                listDiv.innerHTML = '<p class="no-data">No data found.</p>';
-            }
-        });
-    </script>
+    window.onclick = (e) => {
+        if (!e.target.closest('.form-group')) {
+            document.querySelectorAll('.options-container').forEach(el => el.classList.remove('active'));
+        }
+    }
+</script>
 </body>
 </html>
