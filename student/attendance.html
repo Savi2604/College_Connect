@@ -1,73 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Attendance - College Connect</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f8fafc; padding-bottom: 30px; }
-        .header { 
-            background: linear-gradient(135deg, #008080 0%, #00ced1 100%); 
-            color: white; padding: 20px; display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .header a { color: white; text-decoration: none; }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        
-        .student-info { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .student-info h4 { color: #008080; }
+        /* * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; } handled by modern-ui */
 
-        .attendance-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        th { background: #f1f5f9; color: #475569; font-weight: bold; text-transform: uppercase; font-size: 12px; }
-        
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .present { background: #dcfce7; color: #166534; }
-        .absent { background: #fee2e2; color: #991b1b; }
-        
-        .no-data { text-align: center; padding: 40px; color: #94a3b8; }
-        .loading { text-align: center; padding: 50px; }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding: 10px 5px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .header a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .student-info {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary);
+            border: 1px solid var(--border-light);
+            border-left-width: 5px;
+            color: var(--text-light);
+        }
+
+        .student-info h4 {
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        /* Overall Card Style */
+        .overall-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border-top: 6px solid var(--primary);
+            border: 1px solid var(--border-light);
+            border-top-width: 6px;
+        }
+
+        .overall-card h1 {
+            font-size: 48px;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .overall-card p {
+            color: var(--text-light);
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .attendance-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            overflow-x: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th,
+        td {
+            padding: 18px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-light);
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .subject-td {
+            text-align: left;
+            font-weight: bold;
+            color: var(--text-light);
+            background: transparent;
+        }
+
+        .subject-td small {
+            color: var(--primary);
+            font-weight: normal;
+        }
+
+        .perc-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid transparent;
+        }
+
+        .high {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .low {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .loading,
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
     </style>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
     <div class="header">
         <a href="index.html"><i class="fas fa-arrow-left fa-lg"></i></a>
-        <h2>My Attendance</h2>
+        <h2>Internal Attendance</h2>
     </div>
 
     <div class="container">
         <div class="student-info">
             <div>
-                <h4 id="sName">Loading Profile...</h4>
-                <p id="sID" style="font-size: 12px; color: #64748b;"></p>
+                <h4 id="sName">...</h4>
+                <p id="sID" style="color: #64748b;"></p>
             </div>
             <div style="text-align: right;">
-                <p style="font-size: 12px; font-weight: bold; color: #475569;">Dept: <span id="sDept" style="color: #008080;">...</span></p>
+                <p style="font-size: 14px; font-weight: bold;">Dept: <span id="sDept" style="color: #008080;">...</span>
+                </p>
             </div>
+        </div>
+
+        <div class="overall-card" id="overallContainer" style="display: none;">
+            <p>OVERALL ATTENDANCE</p>
+            <h1 id="overallPerc">0%</h1>
+            <p id="overallStats" style="font-size: 14px; margin-top: 5px;">0 / 0 Periods</p>
         </div>
 
         <div class="attendance-card">
             <div id="loading" class="loading">
-                <i class="fas fa-spinner fa-spin fa-2x" style="color: #008080;"></i>
-                <p style="margin-top:10px;">Fetching records...</p>
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p>Calculating percentages...</p>
             </div>
+
             <table id="attTable" style="display: none;">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Subject</th>
-                        <th>Status</th>
+                        <th style="text-align: left;">Subject & Sem</th>
+                        <th>Internal 1</th>
+                        <th>Internal 2</th>
                     </tr>
                 </thead>
                 <tbody id="attendanceList"></tbody>
             </table>
+
             <div id="noData" class="no-data" style="display: none;">
-                <i class="fas fa-calendar-times fa-3x" style="margin-bottom: 10px;"></i>
-                <p>No attendance records have been uploaded for you yet.</p>
+                <i class="fas fa-calendar-times fa-3x"></i>
+                <p>No records found for your ID.</p>
             </div>
         </div>
     </div>
@@ -88,89 +223,102 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
-        const studentID = sessionStorage.getItem("studentID");
-
-        // Function to Fetch Student Info directly from Firebase
-        async function fetchStudentProfile() {
-            if (!studentID) {
-                alert("Session expired. Please log in again.");
-                window.location.href = "login.html";
-                return;
-            }
-            
-            try {
-                const userRef = ref(db, `users/${studentID}`);
-                const snapshot = await get(userRef);
-                
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    document.getElementById('sName').innerText = userData.name || "Unknown Student";
-                    document.getElementById('sID').innerText = "Roll No: " + studentID;
-                    // This fixes the N/A issue by fetching directly from DB
-                    document.getElementById('sDept').innerText = userData.dept || "Not Assigned";
-                }
-            } catch (error) {
-                console.error("Error fetching profile:", error);
-            }
+        const studentID = sessionStorage.getItem("studentID") || sessionStorage.getItem("userId");
+        if (!studentID) {
+            window.location.href = "../login.html";
         }
 
-        // Function to Load Attendance Data
-        async function loadMyAttendance() {
-            const tableBody = document.getElementById('attendanceList');
-            const table = document.getElementById('attTable');
-            const noData = document.getElementById('noData');
+        async function init() {
+
+            const userSnap = await get(ref(db, `users/${studentID.toUpperCase()}`));
+            if (userSnap.exists()) {
+                const u = userSnap.val();
+                document.getElementById('sName').innerText = u.name;
+                document.getElementById('sID').innerText = "ID: " + studentID;
+                document.getElementById('sDept').innerText = u.dept;
+            }
+
+            const attSnap = await get(ref(db, `attendance/${studentID.toUpperCase()}`));
             const loading = document.getElementById('loading');
+            const table = document.getElementById('attTable');
+            const tableBody = document.getElementById('attendanceList');
+            const overallContainer = document.getElementById('overallContainer');
 
-            try {
-                const attRef = ref(db, `attendance/${studentID}`);
-                const snapshot = await get(attRef);
+            loading.style.display = 'none';
 
-                loading.style.display = 'none';
+            if (attSnap.exists()) {
+                table.style.display = 'table';
+                overallContainer.style.display = 'block';
+                const semData = attSnap.val();
 
-                if (snapshot.exists()) {
-                    table.style.display = 'table';
-                    const data = snapshot.val();
-                    let rows = [];
+                let grandTotalClasses = 0;
+                let grandPresentClasses = 0;
 
-                    for (let subject in data) {
-                        for (let date in data[subject]) {
-                            const record = data[subject][date];
-                            rows.push({
-                                date: date,
-                                subject: subject,
-                                status: record.status
-                            });
-                        }
+                tableBody.innerHTML = "";
+
+                for (let sem in semData) {
+                    for (let subject in semData[sem]) {
+                        let rowHtml = `<tr>
+                            <td class="subject-td">${subject} <br> <small style="color:#008080">${sem}</small></td>`;
+
+                        const internals = ["Internal 1", "Internal 2"];
+
+                        internals.forEach(type => {
+                            const records = semData[sem][subject][type];
+                            if (records) {
+                                let subTotal = 0;
+                                let subPresent = 0;
+
+                                for (let date in records) {
+                                    subTotal++;
+                                    grandTotalClasses++; // Add to overall count [cite: 2026-01-15]
+                                    if (records[date].status === "Present") {
+                                        subPresent++;
+                                        grandPresentClasses++; // Add to overall count [cite: 2026-01-15]
+                                    }
+                                }
+
+                                const percentage = ((subPresent / subTotal) * 100).toFixed(0);
+                                const badgeClass = percentage >= 75 ? 'high' : 'low';
+
+                                rowHtml += `<td>
+                                    <span class="perc-badge ${badgeClass}">${percentage}%</span><br>
+                                    <small>${subPresent}/${subTotal}</small>
+                                </td>`;
+                            } else {
+                                rowHtml += `<td><span style="color:#cbd5e1">-</span></td>`;
+                            }
+                        });
+
+                        rowHtml += `</tr>`;
+                        tableBody.innerHTML += rowHtml;
                     }
-
-                    // Sort by date (latest records first)
-                    rows.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                    tableBody.innerHTML = ""; 
-                    rows.forEach(row => {
-                        const statusClass = row.status.toLowerCase() === 'present' ? 'present' : 'absent';
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td style="font-weight: bold; color: #1e293b;">${row.date}</td>
-                                <td style="color: #475569; text-transform: capitalize;">${row.subject}</td>
-                                <td><span class="status-badge ${statusClass}">${row.status}</span></td>
-                            </tr>
-                        `;
-                    });
-
-                } else {
-                    noData.style.display = 'block';
                 }
-            } catch (e) {
-                console.error("Attendance Load Error:", e);
-                loading.innerHTML = "Error loading attendance records.";
+
+                // Final Overall Percentage Calculation [cite: 2026-01-15]
+                if (grandTotalClasses > 0) {
+                    const finalPerc = ((grandPresentClasses / grandTotalClasses) * 100).toFixed(1);
+                    document.getElementById('overallPerc').innerText = finalPerc + "%";
+                    document.getElementById('overallStats').innerText = `${grandPresentClasses} / ${grandTotalClasses} Total Periods`;
+
+                    // Logic to change color if < 80% [cite: 2026-01-15]
+                    if (finalPerc < 80) {
+                        document.getElementById('overallPerc').style.color = "#e74c3c";
+                    } else {
+                        document.getElementById('overallPerc').style.color = "#008080";
+                    }
+                }
+
+            } else {
+                document.getElementById('noData').style.display = 'block';
             }
         }
 
-        // Execute functions
-        fetchStudentProfile();
-        loadMyAttendance();
+        if (studentID) init();
     </script>
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

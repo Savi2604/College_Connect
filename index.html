@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Connect - Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/modern-ui.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent-purple: #7c4dff;
+            --bg-dark: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden; 
+        }
+
+        .dynamic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)),
+                        url('college_bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        /* Main wrapper to push content below navbar */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 100px; /* Space for the navbar header */
+        }
+
+        /* New Header style for College Name [cite: 2026-01-15] */
+        .college-header {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--accent-purple);
+            text-shadow: 0 0 25px rgba(124, 77, 255, 0.6);
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-get-started {
+            background: var(--accent-purple);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+        }
+
+        .btn-login-outline {
+            border: 2px solid rgba(124, 77, 255, 0.5);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            background: rgba(124, 77, 255, 0.05);
+        }
+
+        .btn-get-started:hover {
+            transform: translateY(-3px);
+            background: #6e40ff;
+        }
+
+        .btn-login-outline:hover {
+            background: rgba(124, 77, 255, 0.2);
+            border-color: var(--accent-purple);
+        }
+
+        @media (max-width: 768px) {
+            .college-header { font-size: 2rem; }
+            .hero-subtitle { font-size: 1.3rem; }
+            .btn-group { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dynamic-bg"></div>
+
+    <nav class="navbar" style="background: transparent; position: absolute; top: 0; width: 100%;">
+        <a href="index.html" class="nav-brand" style="color: white; padding: 20px; display: block;">
+            <i class="fas fa-university"></i> CollegeConnect
+        </a>
+    </nav>
+
+    <main class="content-wrapper">
+        <h1 class="college-header">Government College of Engineering, Erode</h1>
+        
+        <div class="hero-subtitle">Your Digital Campus Companion</div>
+
+        <div class="btn-group">
+            <a href="register.html" class="btn-get-started">
+                <i class="fas fa-user-plus"></i> Get Started
+            </a>
+            <a href="login.html" class="btn-login-outline">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+        </div>
+    </main>
+
+    <script src="js/ui.js"></script>
+</body>
+
+</html>

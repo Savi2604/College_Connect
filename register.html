@@ -1,171 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration - College Connect</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .reg-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        .reg-card h2 { color: #008080; text-align: center; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        
-        /* Hint text in RED as requested */
-        .hint { 
-            font-size: 11px; 
-            color: #ff0000; 
-            margin-top: 5px; 
-            font-weight: bold;
-            line-height: 1.3;
-        }
-
-        .btn-reg { width: 100%; background: #008080; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .links { text-align: center; margin-top: 15px; font-size: 14px; }
-        .links a { color: #008080; text-decoration: none; font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="css/modern-ui.css">
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
-<div class="reg-card">
-    <h2><i class="fas fa-user-plus"></i> Register</h2>
-    
-    <div class="form-group">
-        <label>Register As</label>
-        <select id="regRole" onchange="toggleFields()">
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-        </select>
-    </div>
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+        <a href="index.html" class="nav-brand"><i class="fas fa-university"></i> CollegeConnect</a>
+        <a href="index.html" style="text-decoration: none; color: white; font-weight: bold; font-size: 14px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 8px; transition: 0.3s;">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </nav>
 
-    <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="regName" placeholder="Enter name">
-    </div>
+    <main style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 100px 20px 40px;">
+        <div class="glass-card" style="padding: 30px; width: 100%; max-width: 500px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: var(--primary);">Create Account</h2>
+                <p>Join the digital campus</p>
+            </div>
 
-    <div class="form-group">
-        <label>User ID</label>
-        <input type="text" id="regID" placeholder="e.g. 21IMT01, STU_CSE_05">
-    </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold; color: var(--text-light);">Register As</label>
+                <input type="text" id="displayRole" value="Student" readonly
+                    style="background: rgba(0,0,0,0.05); cursor: not-allowed; opacity: 0.7;">
+                <input type="hidden" id="regRole" value="student">
+            </div>
 
-    <div id="studentFields">
-        <div class="form-group">
-            <label>Department</label>
-            <select id="regDept">
-                <option value="IT">IT (IMT)</option>
-                <option value="CSE">CSE (CSE)</option>
-                <option value="ECE">ECE (ECE)</option>
-                <option value="EEE">EEE (EEE)</option>
-                <option value="MECH">MECH (MCE)</option>
-                <option value="AUTO">AUTOMOBILE (ATE)</option>
-                <option value="CIVIL">CIVIL (CVE)</option>
-            </select>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold;">Full Name</label>
+                <input type="text" id="regName" placeholder="Enter your full name">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: bold;">Personal Email ID</label>
+                <input type="email" id="regEmail" placeholder="e.g. name@gmail.com"
+                    oninput="this.value = this.value.toLowerCase()">
+                <div style="font-size: 11px; color: #666; margin-top: 5px;">Must be @gmail.com and small letters only.
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label id="idLabel" style="font-size: 13px; font-weight: bold;">User ID</label>
+                <input type="text" id="regID" placeholder="Roll number">
+            </div>
+
+            <div id="studentFields"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="font-size: 13px; font-weight: bold;">Department</label>
+                    <select id="regDept">
+                        <option value="IT">IT (IMT)</option>
+                        <option value="CSE">CSE (CSE)</option>
+                        <option value="ECE">ECE (ECE)</option>
+                        <option value="EEE">EEE (EEE)</option>
+                        <option value="MECH">MECH (MCE)</option>
+                        <option value="AUTO">AUTOMOBILE (ATE)</option>
+                        <option value="CIVIL">CIVIL (CVE)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 13px; font-weight: bold;">Current Year</label>
+                    <select id="regYear">
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px; position: relative;">
+                <label style="font-size: 13px; font-weight: bold;">Password</label>
+                <input type="password" id="regPass" placeholder="Set password" style="padding-right: 40px;">
+                <i class="fas fa-eye" id="togglePassword"
+                    style="position: absolute; right: 15px; top: 38px; cursor: pointer; color: var(--primary);"></i>
+                <div id="regPassHint" style="font-size: 11px; color: #ef4444; margin-top: 5px; display: none;">
+                    Min 6 chars, start with alphabet, special char required.
+                </div>
+            </div>
+
+            <button class="btn-reg btn-primary" onclick="registerUser()" style="width: 100%;">
+                Create Account
+            </button>
+
+            <div style="text-align: center; margin-top: 15px; font-size: 14px;">
+                Already have an account? <a href="login.html"
+                    style="color: var(--primary); font-weight: bold;">Login</a>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Current Year</label>
-            <select id="regYear">
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-            </select>
-        </div>
-    </div>
+    </main>
+    <script src="js/ui.js"></script>
 
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="regPass" placeholder="Set password">
-        <div class="hint">Min 6 chars, start with alphabet, must include a special char (!@#$%^&*_).</div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    <button class="btn-reg" onclick="registerUser()">Create Account</button>
-    <div class="links">Already have an account? <a href="login.html">Login</a></div>
-</div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    // Unga Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
-        authDomain: "college-connect-2cd42.firebaseapp.com",
-        databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "college-connect-2cd42",
-        storageBucket: "college-connect-2cd42.firebasestorage.app",
-        messagingSenderId: "16394931571",
-        appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
-    };
+        // --- Eye Icon Logic ---
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#regPass');
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+        togglePassword.addEventListener('click', function () {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            this.classList.toggle('fa-eye-slash');
+            this.classList.toggle('fa-eye');
+        });
 
-    window.toggleFields = () => {
-        const role = document.getElementById('regRole').value;
-        document.getElementById('studentFields').style.display = (role === 'student') ? 'block' : 'none';
-    }
+        // --- Enter Key & Focus Flow Logic [cite: 2026-01-15] ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const fields = ['regName', 'regEmail', 'regID', 'regDept', 'regYear', 'regPass'];
 
-    window.registerUser = async function() {
-        const role = document.getElementById('regRole').value;
-        const name = document.getElementById('regName').value;
-        const id = document.getElementById('regID').value.trim().toUpperCase();
-        const pass = document.getElementById('regPass').value;
-        
-        const dept = (role === 'student') ? document.getElementById('regDept').value : "ADMIN";
-        const year = (role === 'student') ? document.getElementById('regYear').value : "N/A";
+            fields.forEach((id, index) => {
+                const currentField = document.getElementById(id);
+                if (!currentField) return;
 
-        if(!name || !id || !pass) { 
-            alert("Please fill in all details!"); 
-            return; 
-        }
+                currentField.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (id === 'regPass') {
+                            window.registerUser();
+                        } else {
+                            const nextField = document.getElementById(fields[index + 1]);
+                            if (nextField) nextField.focus();
+                        }
+                    }
+                });
+            });
+        });
 
-        // --- PASSWORD VALIDATION (Strong, Alphabet start, includes Underscore) ---
-        const strongPassRegex = /^[A-Za-z](?=.*[!@#$%^&*_])(?=.{5,})/;
-        
-        if (!strongPassRegex.test(pass)) {
-            alert("Password Requirements:\n1. Must start with an alphabet\n2. Must include at least one special character (including _)\n3. Minimum 6 characters long");
-            return;
-        }
+        // --- Registration Logic [cite: 2026-01-15] ---
+        window.registerUser = async function () {
+            const role = document.getElementById('regRole').value;
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const rawID = document.getElementById('regID').value.trim();
+            const pass = document.getElementById('regPass').value;
+            const dept = document.getElementById('regDept').value;
+            const year = document.getElementById('regYear').value;
 
-        // --- USER ID FLEXIBLE VALIDATION ---
-        if (role === 'student') {
-            const codes = {
-                "IT": "IMT", "CSE": "CSE", "ECE": "ECE", 
-                "EEE": "EEE", "AUTO": "ATE", "CIVIL": "CVE", "MECH": "MCE"
-            };
-            const requiredCode = codes[dept];
-            
-            // Checks if the required department code exists anywhere in the ID
-            if (!id.includes(requiredCode)) {
-                alert(`Invalid User ID! For ${dept} department, the ID must contain '${requiredCode}'.`);
+            if (!name || !email || !rawID || !pass) {
+                alert("Please fill in all details!");
                 return;
             }
-        } else if (role === 'admin' && !id.includes("ADM")) {
-             alert("Admin ID must contain 'ADM'.");
-             return;
-        }
 
-        try {
-            const userRef = ref(db, `users/${id}`);
-            const snap = await get(userRef);
-            
-            if(snap.exists()) { 
-                alert("User ID already exists! Please use a different ID."); 
-                return; 
+            // Password validation
+            const passRegex = /^[a-zA-Z](?=.*[._!@#$%^&*]).{5,}$/;
+            if (!passRegex.test(pass)) {
+                document.getElementById('regPassHint').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('regPassHint').style.display = 'none';
             }
 
-            await set(userRef, { 
-                name, id, role, dept, year, password: pass 
-            });
-            
-            alert("Registration Successful!");
-            window.location.href = "login.html";
-        } catch (e) { 
-            alert("Error connecting to database. Please check your connection."); 
+            const gmailRegex = /^[a-z][a-z0-9._%+-]*@gmail\.com$/;
+            if (!gmailRegex.test(email)) {
+                alert("Invalid Email Requirements!");
+                return;
+            }
+
+            let dbID = rawID.replace(/\./g, '_').toUpperCase();
+
+            const strongPassRegex = /^[A-Za-z](?=.*[!@#$%^&*_])(?=.{5,})/;
+            if (!strongPassRegex.test(pass)) {
+                alert("Password Requirements not met!");
+                return;
+            }
+
+            const codes = { "IT": "IMT", "CSE": "CSE", "ECE": "ECE", "EEE": "EEE", "AUTO": "ATE", "CIVIL": "CVE", "MECH": "MCE" };
+            if (!dbID.includes(codes[dept])) {
+                alert(`Invalid Roll Number for ${dept}!`);
+                return;
+            }
+
+            try {
+                const userRef = ref(db, `users/${dbID}`);
+                const snap = await get(userRef);
+
+                if (snap.exists()) {
+                    alert("This Roll Number is already registered!");
+                    return;
+                }
+
+                await set(userRef, {
+                    name,
+                    email,
+                    id: rawID,
+                    role,
+                    dept,
+                    year,
+                    password: pass
+                });
+
+                alert("Account Created Successfully!");
+                window.location.href = "login.html";
+
+            } catch (e) {
+                console.error(e);
+                alert("Connection error. Please try again.");
+            }
         }
-    }
-</script>
+    </script>
 </body>
+
 </html>

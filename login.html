@@ -1,120 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - College Connect</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 60px 40px 40px 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; position: relative; }
-        
-        /* Image-la neenga ketta maari Header Style */
-        .top-bar { 
-            background: #008080; 
-            color: white; 
-            padding: 15px; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            border-radius: 20px 20px 0 0; 
-            font-weight: bold; 
-            font-size: 18px; 
-            text-transform: uppercase; 
-        }
+    <link rel="stylesheet" href="css/modern-ui.css">
 
-        .logo-container { margin-top: 20px; margin-bottom: 15px; }
-        .logo-container i { font-size: 70px; color: #008080; }
-        
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; left: 18px; top: 18px; color: #008080; font-size: 18px; }
-        
-        input { width: 100%; padding: 18px 15px 18px 55px; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; outline: none; font-size: 16px; }
-        
-        /* Login Page Hint in RED */
-        .hint-red {
-            font-size: 11px;
-            color: #ff0000;
-            margin-bottom: 15px;
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .btn-login { width: 100%; background: #008080; color: white; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .links { margin-top: 25px; font-size: 15px; color: #666; }
-        .links a { color: #008080; text-decoration: none; font-weight: bold; }
-    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("neW5TN-qwxGTzjJrE");
+        })();
+    </script>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
-<div class="login-card">
-    <div class="top-bar">College Connect Login</div>
-    <div class="logo-container"><i class="fas fa-graduation-cap"></i></div>
-    <h2>Welcome Back</h2>
-    
-    <div class="input-group">
-        <i class="fas fa-user"></i>
-        <input type="text" id="logID" placeholder="User ID">
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+        <a href="index.html" class="nav-brand"><i class="fas fa-university"></i> CollegeConnect</a>
+        <a href="index.html" style="text-decoration: none; color: white; font-weight: bold; font-size: 14px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </nav>
+
+    <main style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding-top: 70px;">
+        <div class="glass-card" style="padding: 40px; width: 100%; max-width: 400px; text-align: center;">
+            <div style="margin-bottom: 25px;">
+                <h2 style="color: var(--primary);">Welcome Back</h2>
+                <p style="font-size: 14px; opacity: 0.7;">Login to access your dashboard</p>
+            </div>
+
+            <div style="margin-bottom: 20px; position: relative;">
+                <i class="fas fa-user"
+                    style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                <input type="text" id="logID" placeholder="User ID or Admin Email" style="padding-left: 40px;">
+            </div>
+
+            <div style="margin-bottom: 25px; position: relative;">
+                <i class="fas fa-lock"
+                    style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                <input type="password" id="logPass" placeholder="Password"
+                    style="padding-left: 40px; padding-right: 40px;">
+                <i class="fas fa-eye-slash" id="togglePassword" onclick="togglePass('logPass', this)"
+                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary);"></i>
+            </div>
+
+            <a href="#" onclick="openModal()"
+                style="display: block; text-align: right; margin-bottom: 15px; color: var(--primary); font-size: 14px; text-decoration: none; font-weight: bold;">Forgot
+                Password?</a>
+
+            <div id="passHint"
+                style="font-size: 11px; color: #ef4444; margin-bottom: 15px; text-align: left; display: none;">
+                Password must include a special char (e.g., _).
+            </div>
+
+            <button class="btn-primary" id="loginBtn" style="width: 100%; font-weight: bold;">
+                Login
+            </button>
+
+            <div style="margin-top: 20px; font-size: 14px;">
+                Don't have an account? <a href="register.html"
+                    style="color: var(--primary); font-weight: bold;">Register</a>
+            </div>
+        </div>
+    </main>
+
+    <div id="forgotModal" class="modal">
+        <div class="modal-content glass-card">
+            <span onclick="closeModal()" class="modal-close">&times;</span>
+
+            <div id="step1">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">Reset Password</h3>
+                <input type="text" id="resetID" placeholder="Roll No / Email"
+                    style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 15px;">
+                <button class="btn-primary" onclick="handleSendOTP()" style="width: 100%;">Send OTP</button>
+            </div>
+
+            <div id="step2" style="display:none;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">Verify OTP</h3>
+                <div id="otpStatus" class="status-msg" style="margin-bottom:10px; color: green;"></div>
+                <input type="number" id="otpInput"
+                    style="text-align:center; letter-spacing:8px; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 15px;"
+                    placeholder="000000">
+                <button class="btn-primary" onclick="handleVerifyOTP()" style="width: 100%;">Verify Code</button>
+            </div>
+
+            <div id="step3" style="display:none;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">Set New Password</h3>
+                <div style="margin-bottom: 10px; position: relative;">
+                    <input type="password" id="newP" placeholder="New Password"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-light);">
+                </div>
+                <div style="margin-bottom: 15px; position: relative;">
+                    <input type="password" id="confP" placeholder="Confirm Password"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-light);">
+                </div>
+                <div id="resetPassHint"
+                    style="font-size: 11px; color: #ef4444; margin-bottom: 15px; text-align: left; display: none;">
+                    Min 6 chars, special char required.
+                </div>
+                <button class="btn-primary" onclick="handleUpdatePass()" style="width: 100%;">Update Password</button>
+            </div>
+        </div>
     </div>
-    
-    <div class="input-group">
-        <i class="fas fa-lock"></i>
-        <input type="password" id="logPass" placeholder="Password">
-    </div>
 
-    <div class="hint-red">Min 6 chars, start with alphabet, must include a special char (!@#$%^&*_).</div>
+    <script src="js/ui.js"></script>
 
-    <button class="btn-login" onclick="login()">Login</button>
-    <div class="links">Don't have an account? <a href="register.html">Register Now</a></div>
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
-        authDomain: "college-connect-2cd42.firebaseapp.com",
-        databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "college-connect-2cd42",
-        storageBucket: "college-connect-2cd42.firebasestorage.app",
-        messagingSenderId: "16394931571",
-        appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
-    };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+        let currentOTP = null;
+        let userKeyForReset = "";
 
-    window.login = async function() {
-        const id = document.getElementById('logID').value.trim().toUpperCase();
-        const pass = document.getElementById('logPass').value;
+        // --- TOGGLE PASSWORD LOGIC ---
+        window.togglePass = function (id, icon) {
+            const input = document.getElementById(id);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            }
+        };
 
-        if(!id || !pass) { alert("Please enter User ID and Password."); return; }
+        window.openModal = () => document.getElementById('forgotModal').classList.add('show');
+        window.closeModal = () => document.getElementById('forgotModal').classList.remove('show');
 
-        // --- UPDATED REGEX WITH UNDERSCORE ---
-        const strongPassRegex = /^[A-Za-z](?=.*[!@#$%^&*_])(?=.{5,})/;
-        
-        if (!strongPassRegex.test(pass)) {
-            alert("Invalid Password Format!\nIt must start with an alphabet, have at least 6 characters, and contain a special character (like _).");
-            return;
+        // Login Logic [cite: 2026-01-15]
+        async function handleLogin() {
+            let id = document.getElementById('logID').value.trim();
+            let pass = document.getElementById('logPass').value;
+            if (!id || !pass) return alert("Fill all fields.");
+
+            const passRegex = /^(?=.*[._!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
+            if (!passRegex.test(pass)) {
+                document.getElementById('passHint').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('passHint').style.display = 'none';
+            }
+
+            let dbPath = id.replace(/\./g, '_').toUpperCase();
+
+            try {
+                const snap = await get(ref(db, `users/${dbPath}`));
+                if (snap.exists() && snap.val().password === pass) {
+                    const userData = snap.val();
+                    sessionStorage.setItem("isLoggedIn", "true");
+                    sessionStorage.setItem("role", userData.role);
+                    sessionStorage.setItem("userName", userData.name || "Student");
+                    sessionStorage.setItem("userId", dbPath);
+                    sessionStorage.setItem("studentID", dbPath);
+                    sessionStorage.setItem("dept", userData.dept || "N/A");
+                    sessionStorage.setItem("year", userData.year || "N/A");
+
+                    window.location.replace(userData.role === "admin" ? "admin/index.html" : "student/index.html");
+                } else { alert("Invalid Credentials!"); }
+            } catch (e) { alert("Login Error."); }
         }
 
-        try {
-            const userRef = ref(db, `users/${id}`);
-            const snapshot = await get(userRef);
-            if (snapshot.exists()) {
-                const userData = snapshot.val();
-                if (userData.password === pass) {
-                    sessionStorage.setItem("isLoggedIn", "true");
-                    sessionStorage.setItem("studentID", id);
-                    sessionStorage.setItem("userName", userData.name);
-                    sessionStorage.setItem("role", userData.role);
-                    window.location.href = (userData.role === "admin") ? "admin/index.html" : "student/index.html";
-                } else { alert("Incorrect password!"); }
+        // OTP Logic [cite: 2026-01-15]
+        window.handleSendOTP = async function () {
+            let inputVal = document.getElementById('resetID').value.trim();
+            if (!inputVal) return alert("Enter Roll No!");
+            userKeyForReset = inputVal.replace(/\./g, '_').toUpperCase();
+
+            const snap = await get(ref(db, `users/${userKeyForReset}`));
+            if (snap.exists()) {
+                currentOTP = Math.floor(100000 + Math.random() * 900000);
+                emailjs.send('service_pa22ohy', 'template_bkqywnv', { to_email: snap.val().email || inputVal, otp: currentOTP })
+                    .then(() => {
+                        document.getElementById('step1').style.display = 'none';
+                        document.getElementById('step2').style.display = 'block';
+                        alert("OTP Sent!");
+                    });
             } else { alert("User not found!"); }
-        } catch (e) { alert("Login failed due to connection error."); }
-    }
-</script>
+        };
+
+        window.handleVerifyOTP = () => {
+            if (document.getElementById('otpInput').value == currentOTP) {
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+            } else { alert("Invalid OTP!"); }
+        };
+
+        window.handleUpdatePass = async function () {
+            const p1 = document.getElementById('newP').value;
+            const p2 = document.getElementById('confP').value;
+
+            const passRegex = /^(?=.*[._!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
+            if (!passRegex.test(p1)) {
+                document.getElementById('resetPassHint').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('resetPassHint').style.display = 'none';
+            }
+
+            if (p1 === p2 && p1 !== "") {
+                await update(ref(db, `users/${userKeyForReset}`), { password: p1 });
+                alert("Password Updated Successfully!");
+                location.reload();
+            } else { alert("Passwords do not match!"); }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('loginBtn');
+            if (btn) btn.addEventListener('click', handleLogin);
+        });
+        document.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+
+    </script>
 </body>
+
 </html>

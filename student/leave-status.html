@@ -1,40 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Leave Status</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; padding: 20px; }
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #008080; }
-        .status-card { 
-            background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 8px solid #f39c12; 
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+            margin: 0;
         }
-        .info b { display: block; font-size: 18px; color: #333; }
-        .status-badge { 
-            background: #fff4e5; color: #f39c12; padding: 8px 15px; 
-            border-radius: 20px; font-weight: bold; font-size: 14px;
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .header a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        #status-container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .status-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 22px;
+            border-radius: 18px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+            border-left: 10px solid #f39c12;
+            border: 1px solid var(--border-light);
+            border-left-width: 10px;
+        }
+
+        .info b {
+            display: block;
+            font-size: 19px;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        .date-range {
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 13.5px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .status-badge {
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 11px;
             text-transform: uppercase;
+            min-width: 90px;
+            text-align: center;
         }
-        /* Approved/Rejected styles */
-        .approved-card { border-left-color: #27ae60 !important; }
-        .approved-badge { background: #eafaf1 !important; color: #27ae60 !important; }
-        .rejected-card { border-left-color: #e74c3c !important; }
-        .rejected-badge { background: #fdedec !important; color: #e74c3c !important; }
+
+        .pending-badge {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+            border: 1px solid rgba(243, 156, 18, 0.2);
+        }
+
+        .approved-card {
+            border-left-color: #27ae60 !important;
+        }
+
+        .approved-badge {
+            background: rgba(39, 174, 96, 0.1) !important;
+            color: #27ae60 !important;
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+
+        .rejected-card {
+            border-left-color: #e74c3c !important;
+        }
+
+        .rejected-badge {
+            background: rgba(231, 76, 60, 0.1) !important;
+            color: #e74c3c !important;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
     </style>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
     <div class="header">
-        <a href="index.html" style="color: #008080;"><i class="fas fa-arrow-left fa-lg"></i></a>
-        <h2>My Leave Status</h2>
+        <a href="index.html"><i class="fas fa-arrow-left fa-lg"></i></a>
+        <h2 style="margin:0;">My Leave Status</h2>
     </div>
 
     <div id="status-container">
-        <p style="text-align:center;">Loading requests...</p>
+        <p style="text-align:center; color: #777;">Loading requests...</p>
     </div>
 
     <script type="module">
@@ -55,24 +131,33 @@
         const db = getDatabase(app);
         const container = document.getElementById('status-container');
 
-        // Path: leaverequests (as per your screenshot)
+        const currentUserID = sessionStorage.getItem("studentID") || sessionStorage.getItem("userId");
+        if (!currentUserID) {
+            window.location.replace("../login.html");
+        }
+
         onValue(ref(db, 'leaverequests'), (snapshot) => {
-            console.log("Data received:", snapshot.val()); // Browser console-la check panna
             container.innerHTML = "";
+            let found = false;
 
             if (snapshot.exists()) {
                 snapshot.forEach(child => {
                     const req = child.val();
-                    
-                    // Matching "STU001" exactly
-                    if(req.studentID === "STU001") {
-                        let cardClass = "";
-                        let badgeClass = "";
 
-                        if(req.status === "Approved") {
+                    if (req.studentID && req.studentID.toUpperCase() === currentUserID.toUpperCase()) {
+                        found = true;
+
+                        // FIX: Unga apply-leave.html-la irukkura 'fromDate' and 'toDate' use panroom [cite: 2026-01-15]
+                        const dateDisplay = `${req.fromDate} to ${req.toDate}`;
+
+                        let cardClass = "";
+                        let badgeClass = "pending-badge";
+                        let statusText = req.status || "PENDING";
+
+                        if (statusText === "Approved") {
                             cardClass = "approved-card";
                             badgeClass = "approved-badge";
-                        } else if(req.status === "Rejected") {
+                        } else if (statusText === "Rejected") {
                             cardClass = "rejected-card";
                             badgeClass = "rejected-badge";
                         }
@@ -81,17 +166,30 @@
                             <div class="status-card ${cardClass}">
                                 <div class="info">
                                     <b>${req.type}</b>
-                                    <span style="color:#666; font-size:14px;">Date: ${req.date}</span>
-                                    <p style="margin:5px 0; font-size:13px; font-style:italic;">Reason: ${req.reason}</p>
+                                    <span class="date-range">
+                                        <i class="far fa-calendar-alt"></i> ${dateDisplay}
+                                    </span>
+                                    <p style="margin:8px 0 0 0; font-size:13px; color:#555;">
+                                        <strong>Reason:</strong> ${req.reason}
+                                    </p>
                                 </div>
-                                <div class="status-badge ${badgeClass}">${req.status}</div>
+                                <div class="status-badge ${badgeClass}">${statusText}</div>
                             </div>`;
                     }
                 });
+
+                if (!found) {
+                    container.innerHTML = `<p style='text-align:center; padding-top:50px;'>No records for ${currentUserID}</p>`;
+                }
             } else {
-                container.innerHTML = "<p style='text-align:center;'>No requests found in Database.</p>";
+                container.innerHTML = "<p style='text-align:center; padding-top:50px;'>No data found.</p>";
             }
         });
     </script>
+
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

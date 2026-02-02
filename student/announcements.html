@@ -1,157 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Announcement - Admin</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Announcements - College Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #333; text-align: center; margin-bottom: 25px; }
-        .form-group { margin-bottom: 20px; position: relative; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
-        
-        /* Dropdown Style */
-        .multiselect-box {
-            border: 1px solid #ddd; border-radius: 8px; padding: 12px;
-            background: #fff; cursor: pointer; display: flex;
-            justify-content: space-between; align-items: center; font-size: 14px;
+        /* * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; } handled by modern-ui */
+        /* Corrected CSS */
+        /* body { padding-bottom: 80px; handled by layout usually, but ok here } */
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding: 10px 5px;
         }
-        .options-container {
-            display: none; position: absolute; width: 100%;
-            background: white; border: 1px solid #ddd; border-radius: 8px;
-            margin-top: 5px; z-index: 10; max-height: 200px;
-            overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .options-container.active { display: block; }
-        .option-item {
-            padding: 10px; display: flex; align-items: center;
-            gap: 10px; border-bottom: 1px solid #f9f9f9; cursor: pointer;
+
+        .header-left h2 {
+            margin: 0;
+            font-size: 1.5rem;
         }
-        .option-item:hover { background: #f0f7f7; }
-        .btn-send { width: 100%; background: #008080; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px; }
-        .btn-send:hover { background: #006666; }
+
+        .header a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .info-bar {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(12px);
+            color: var(--text-light);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .announcement-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .announcement-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .announcement-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+            opacity: 0.9;
+        }
     </style>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
-<div class="container">
-    <h2><i class="fas fa-bullhorn" style="color: #008080;"></i> Post New Announcement</h2>
-    
-    <div class="form-group">
-        <label>Title</label>
-        <input type="text" id="title" placeholder="Enter title...">
-    </div>
-
-    <div class="form-group">
-        <label>Message</label>
-        <textarea id="message" placeholder="Type message..."></textarea>
-    </div>
-
-    <div class="form-group">
-        <label>Target Departments</label>
-        <div class="multiselect-box" onclick="toggleDropdown('deptOptions')">
-            <span id="deptLabel">Select Departments</span>
-            <i class="fas fa-chevron-down"></i>
-        </div>
-        <div class="options-container" id="deptOptions">
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="IT" onchange="updateLabels()"> IT</label>
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="CSE" onchange="updateLabels()"> CSE</label>
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="ECE" onchange="updateLabels()"> ECE</label>
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="EEE" onchange="updateLabels()"> EEE</label>
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="MECH" onchange="updateLabels()"> MECH</label>
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="AUTO" onchange="updateLabels()"> AUTO</label>
-            <label class="option-item"><input type="checkbox" class="dept-cb" value="CIVIL" onchange="updateLabels()"> CIVIL</label>
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html" title="Back"><i class="fas fa-arrow-left fa-lg"></i></a>
+            <h2>Announcements</h2>
         </div>
     </div>
 
-    <div class="form-group">
-        <label>Target Year(s)</label>
-        <div class="multiselect-box" onclick="toggleDropdown('yearOptions')">
-            <span id="yearLabel">Select Year(s)</span>
-            <i class="fas fa-chevron-down"></i>
+    <div class="container">
+        <div class="info-bar" id="studentContextBar">
+            <div>
+                <strong>Dept: </strong><span id="d-dept">Loading...</span><br>
+                <strong>Roll No: </strong><span id="d-roll">...</span>
+            </div>
+            <div style="text-align: right;">
+                <strong>Year: </strong><span id="d-year">...</span>
+            </div>
         </div>
-        <div class="options-container" id="yearOptions">
-            <label class="option-item"><input type="checkbox" id="allYears" onclick="selectAllYears(this)"> <b>ALL YEARS</b></label>
-            <label class="option-item"><input type="checkbox" class="year-cb" value="1" onchange="updateLabels()"> 1st Year</label>
-            <label class="option-item"><input type="checkbox" class="year-cb" value="2" onchange="updateLabels()"> 2nd Year</label>
-            <label class="option-item"><input type="checkbox" class="year-cb" value="3" onchange="updateLabels()"> 3rd Year</label>
-            <label class="option-item"><input type="checkbox" class="year-cb" value="4" onchange="updateLabels()"> 4th Year</label>
+
+        <div id="announcement-list">
+            <p style="text-align: center; color: #94a3b8; margin-top: 20px;">Fetching relevant news...</p>
         </div>
     </div>
 
-    <button class="btn-send" onclick="sendNotice()">Send Announcement</button>
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
-        authDomain: "college-connect-2cd42.firebaseapp.com",
-        databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "college-connect-2cd42",
-        storageBucket: "college-connect-2cd42.firebasestorage.app",
-        messagingSenderId: "16394931571",
-        appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.toggleDropdown = (id) => {
-        const el = document.getElementById(id);
-        const isActive = el.classList.contains('active');
-        document.querySelectorAll('.options-container').forEach(c => c.classList.remove('active'));
-        if(!isActive) el.classList.add('active');
-    }
-
-    window.selectAllYears = (source) => {
-        document.querySelectorAll('.year-cb').forEach(cb => cb.checked = source.checked);
-        updateLabels();
-    }
-
-    window.updateLabels = () => {
-        const depts = document.querySelectorAll('.dept-cb:checked').length;
-        const years = document.querySelectorAll('.year-cb:checked').length;
-        document.getElementById('deptLabel').innerText = depts > 0 ? `${depts} Selected` : "Select Departments";
-        document.getElementById('yearLabel').innerText = years > 0 ? `${years} Selected` : "Select Year(s)";
-    }
-
-    window.sendNotice = async function() {
-        const title = document.getElementById('title').value;
-        const msg = document.getElementById('message').value;
-        const selectedDepts = Array.from(document.querySelectorAll('.dept-cb:checked')).map(cb => cb.value);
-        const selectedYears = Array.from(document.querySelectorAll('.year-cb:checked')).map(cb => cb.value);
-
-        if(!title || !msg || selectedDepts.length === 0 || selectedYears.length === 0) {
-            alert("Ellathaiyum fill panni targets select pannunga brother!");
-            return;
-        }
-
-        const data = {
-            title, message: msg,
-            targetDepts: selectedDepts,
-            targetYears: selectedYears,
-            timestamp: Date.now(),
-            date: new Date().toLocaleDateString()
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
         };
 
-        try {
-            await push(ref(db, 'announcements/'), data);
-            alert("Successfully sent!");
-            location.reload();
-        } catch (e) { alert("Error!"); }
-    }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    window.onclick = (e) => {
-        if (!e.target.closest('.form-group')) {
-            document.querySelectorAll('.options-container').forEach(el => el.classList.remove('active'));
+        // Use studentID from session to fetch real-time context [cite: 2026-01-15]
+        const studentID = sessionStorage.getItem("studentID") || sessionStorage.getItem("userId");
+
+        async function initPage() {
+            if (!studentID) {
+                window.location.replace("../login.html");
+                return;
+            }
+
+            // 1. Fetch Student Info for Header [cite: 2026-01-15]
+            const userRef = ref(db, `users/${studentID.replace(/\./g, '_').toUpperCase()}`);
+            const userSnap = await get(userRef);
+
+            let currentDept = "All";
+            let currentYear = "All";
+
+            if (userSnap.exists()) {
+                const u = userSnap.val();
+                currentDept = u.dept || "All";
+                currentYear = u.year || "All";
+
+                document.getElementById('d-dept').innerText = currentDept;
+                document.getElementById('d-roll').innerText = u.id || studentID;
+                document.getElementById('d-year').innerText = currentYear + (isNaN(currentYear) ? "" : " Year");
+            }
+
+            // 2. Load & Filter Announcements [cite: 2026-01-15]
+            const listDiv = document.getElementById('announcement-list');
+            onValue(ref(db, 'announcements'), (snapshot) => {
+                listDiv.innerHTML = "";
+                if (snapshot.exists()) {
+                    const items = Object.values(snapshot.val()).sort((a, b) => b.timestamp - a.timestamp);
+                    let count = 0;
+
+                    items.forEach(item => {
+                        const isDeptOk = (currentDept === "ADMIN" || currentDept === "All") ||
+                            (item.targetDepts && (item.targetDepts.includes(currentDept) || item.targetDepts.includes("All")));
+
+                        const isYearOk = (currentYear === "All") ||
+                            (item.targetYears && (item.targetYears.includes(String(currentYear)) || item.targetYears.includes("All")));
+
+                        if (isDeptOk && isYearOk) {
+                            count++;
+                            listDiv.innerHTML += `
+                                <div class="announcement-card">
+                                    <h3>${item.title}</h3>
+                                    <p>${item.message}</p>
+                                </div>`;
+                        }
+                    });
+
+                    if (count === 0) {
+                        listDiv.innerHTML = `<p style="text-align:center; color:#94a3b8; margin-top:50px;">No specific announcements for ${currentDept} ${currentYear}.</p>`;
+                    }
+                } else {
+                    listDiv.innerHTML = '<p style="text-align:center; color:#94a3b8; margin-top:50px;">No announcements available.</p>';
+                }
+            });
         }
-    }
-</script>
+
+        initPage();
+    </script>
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

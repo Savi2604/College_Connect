@@ -1,52 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Marks - College Connect</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; padding: 20px; }
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #008080; }
-        .marks-card { 
-            background: white; padding: 20px; border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { color: #008080; font-size: 14px; text-transform: uppercase; }
-        .score { font-weight: bold; color: #2c3e50; }
-        .percentage { 
-            display: inline-block; padding: 4px 8px; border-radius: 5px; 
-            background: #e0f2f2; color: #008080; font-size: 12px; 
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .header h2 {
+            font-size: 22px;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .header a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        /* Sem Wise Section Styling */
+        .sem-container {
+            margin-bottom: 25px;
+        }
+
+        .sem-title {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .marks-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 15px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            border: 1px solid var(--border-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 400px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-light);
+        }
+
+        th {
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 12px;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.02);
+            font-weight: 700;
+        }
+
+        .subject-name {
+            text-align: left;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .mark-val {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .pass {
+            color: #27ae60;
+        }
+
+        .fail {
+            color: #e74c3c;
+        }
+
+
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            opacity: 0.7;
         }
     </style>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
     <div class="header">
-        <a href="index.html" style="color: #008080;"><i class="fas fa-arrow-left fa-lg"></i></a>
-        <h2>Examination Results</h2>
+        <a href="index.html"><i class="fas fa-arrow-left fa-lg"></i></a>
+        <h2>Internal Results</h2>
     </div>
 
-    <div class="marks-card">
-        <table id="marksTable">
-            <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Score</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody id="marksBody">
-                </tbody>
-        </table>
-        <div id="noData" style="display:none; text-align:center; padding: 20px;">No marks updated yet.</div>
+    <!-- Student Info Banner -->
+    <div id="studentBanner" class="auto-info"
+        style="max-width: 900px; margin: 0 auto 20px auto; background: rgba(0, 128, 128, 0.1); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); color: var(--primary); display: none;">
+        <i class="fas fa-user-circle"></i> Results for: <b id="studentDisplayName">...</b> (<span
+            id="studentDisplayID">...</span>)
+    </div>
+
+    <div id="marksContainer">
+        <div class="no-data"><i class="fas fa-spinner fa-spin fa-2x"></i><br>
+            <p>Loading your marks...</p>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
@@ -60,26 +147,75 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const marksBody = document.getElementById('marksBody');
-        const studentID = "STU001"; // Manu's ID
+        const marksContainer = document.getElementById('marksContainer');
+
+        const studentID = sessionStorage.getItem("studentID") || sessionStorage.getItem("userId");
+        if (!studentID) {
+            window.location.replace("../login.html");
+        }
+
+        async function fetchStudentName() {
+            try {
+                const snap = await get(ref(db, `users/${studentID.toUpperCase()}`));
+                if (snap.exists()) {
+                    const name = snap.val().name || "Student";
+                    document.getElementById('studentDisplayName').innerText = name;
+                    document.getElementById('studentDisplayID').innerText = studentID;
+                    document.getElementById('studentBanner').style.display = 'block';
+                }
+            } catch (e) { console.error(e); }
+        }
+        fetchStudentName();
 
         onValue(ref(db, 'marks/' + studentID), (snapshot) => {
-            marksBody.innerHTML = "";
             if (snapshot.exists()) {
-                document.getElementById('noData').style.display = "none";
-                snapshot.forEach(child => {
-                    const m = child.val();
-                    marksBody.innerHTML += `
-                        <tr>
-                            <td><b>${m.subject}</b></td>
-                            <td class="score">${m.score}</td>
-                            <td>${m.total}</td>
-                        </tr>`;
-                });
+                marksContainer.innerHTML = "";
+                const semData = snapshot.val();
+
+                // Semester wise loop
+                for (let sem in semData) {
+                    let semHtml = `
+                        <div class="sem-container">
+                            <div class="sem-title"><i class="fas fa-graduation-cap"></i> ${sem}</div>
+                            <div class="marks-card">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:left">Subject</th>
+                                            <th>Internal 1</th>
+                                            <th>Internal 2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+
+                    const subjects = semData[sem];
+                    for (let subName in subjects) {
+                        const i1 = subjects[subName]["Internal 1"] || "-";
+                        const i2 = subjects[subName]["Internal 2"] || "-";
+
+                        // Simple Pass/Fail color logic (assuming 50 is pass)
+                        const i1Class = (i1 !== "-" && i1 < 50) ? "fail" : "pass";
+                        const i2Class = (i2 !== "-" && i2 < 50) ? "fail" : "pass";
+
+                        semHtml += `
+                            <tr>
+                                <td class="subject-name">${subName}</td>
+                                <td class="mark-val ${i1Class}">${i1}</td>
+                                <td class="mark-val ${i2Class}">${i2}</td>
+                            </tr>`;
+                    }
+
+                    semHtml += `</tbody></table></div></div>`;
+                    marksContainer.innerHTML += semHtml;
+                }
             } else {
-                document.getElementById('noData').style.display = "block";
+                marksContainer.innerHTML = `<div class="no-data"><i class="fas fa-folder-open fa-3x"></i><br><p>No marks found for ID: ${studentID}</p></div>`;
             }
         });
     </script>
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

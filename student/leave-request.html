@@ -1,41 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply Leave - College Connect</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f7f7; padding: 20px; }
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; color: #008080; }
-        .form-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 600px; margin: auto; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
-        
-        .auto-info { 
-            background: #e6f4f4; padding: 12px; border-radius: 8px; 
-            font-weight: bold; color: #008080; border: 1px dashed #008080;
-            margin-bottom: 20px; font-size: 14px;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
         }
 
-        input, textarea, select { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; 
-            box-sizing: border-box; font-size: 14px;
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            color: #008080;
         }
 
-        .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-        .submit-btn { 
-            background: #008080; color: white; width: 100%; padding: 15px; 
-            border: none; border-radius: 10px; font-size: 16px; font-weight: bold; 
-            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        /* Use variable background */
+        .form-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid var(--border-light);
         }
-        .submit-btn:hover { background: #006666; }
-        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
-        #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .auto-info {
+            background: rgba(0, 128, 128, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #008080;
+            border: 1px dashed #008080;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-light);
+        }
+
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(129, 140, 248, 0.3);
+            color: white;
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .submit-btn {
+            background: #008080;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #006666;
+        }
+
+        #statusMsg {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--text-light);
+        }
     </style>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
     <div class="header">
         <a href="index.html" style="color: #008080;"><i class="fas fa-arrow-left fa-lg"></i></a>
@@ -44,7 +123,7 @@
 
     <div class="form-card">
         <div id="studentProfile" class="auto-info">
-            <i class="fas fa-sync fa-spin"></i> Fetching profile details...
+            <i class="fas fa-sync fa-spin"></i> Fetching profile...
         </div>
 
         <form id="leaveForm">
@@ -57,14 +136,27 @@
                 </select>
             </div>
 
-            <div class="date-grid">
+            <div class="input-group">
+                <label>Duration</label>
+                <select id="duration" onchange="toggleDateFields()">
+                    <option value="single">Single Day</option>
+                    <option value="multiple">Multiple Days</option>
+                </select>
+            </div>
+
+            <div id="singleDateGroup" class="input-group">
+                <label>Leave Date</label>
+                <input type="date" id="singleDate">
+            </div>
+
+            <div id="multipleDateGroup" class="date-grid hidden">
                 <div class="input-group">
                     <label>From Date</label>
-                    <input type="date" id="fromDate" required>
+                    <input type="date" id="fromDate">
                 </div>
                 <div class="input-group">
                     <label>To Date</label>
-                    <input type="date" id="toDate" required>
+                    <input type="date" id="toDate">
                 </div>
             </div>
 
@@ -95,63 +187,86 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const loggedInID = sessionStorage.getItem("studentID") || "STU001";
-        let studentDetails = { name: "Student", dept: "IT", year: "3" }; 
-
-        async function initProfile() {
-            const profileDiv = document.getElementById('studentProfile');
-            const btn = document.getElementById('submitBtn');
-            
-            try {
-                const snapshot = await get(ref(db, `users/${loggedInID}`));
-                if(snapshot.exists()) {
-                    const data = snapshot.val();
-                    studentDetails.name = data.name || "Student";
-                    studentDetails.dept = data.dept || "IT"; // "undefined" fix
-                    studentDetails.year = data.year || "3";
-                }
-                profileDiv.innerHTML = `<i class="fas fa-user-check"></i> Applying as: <b>${studentDetails.name} (${studentDetails.dept} - Year ${studentDetails.year})</b>`;
-                btn.disabled = false;
-            } catch (e) {
-                profileDiv.innerHTML = "Error loading profile.";
-            }
+        const loggedInID = sessionStorage.getItem("studentID") || sessionStorage.getItem("userId");
+        if (!loggedInID) {
+            window.location.replace("../login.html");
         }
+        let studentDetails = { name: "", dept: "", year: "" };
 
+        // 1. Show/Hide Logic [cite: 2026-01-15]
+        window.toggleDateFields = function () {
+            const dur = document.getElementById('duration').value;
+            const single = document.getElementById('singleDateGroup');
+            const multiple = document.getElementById('multipleDateGroup');
+
+            if (dur === 'single') {
+                single.classList.remove('hidden');
+                multiple.classList.add('hidden');
+            } else {
+                single.classList.add('hidden');
+                multiple.classList.remove('hidden');
+            }
+        };
+
+        // 2. Fetch Profile [cite: 2026-01-15]
+        async function initProfile() {
+            try {
+                const snapshot = await get(ref(db, `users/${loggedInID.toUpperCase()}`));
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    studentDetails = { name: data.name, dept: data.dept, year: data.year };
+                    document.getElementById('studentProfile').innerHTML = `<i class="fas fa-user-check"></i> Applying as: <b>${data.name} (${data.dept} - Year ${data.year})</b>`;
+                    document.getElementById('submitBtn').disabled = false;
+                }
+            } catch (e) { console.error(e); }
+        }
         initProfile();
 
+        // 3. Submit Logic [cite: 2026-01-15]
         document.getElementById('leaveForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const msg = document.getElementById('statusMsg');
-            const from = document.getElementById('fromDate').value;
-            const to = document.getElementById('toDate').value;
+            const dur = document.getElementById('duration').value;
+            let finalFrom, finalTo, days;
 
-            // Date Validation
-            if (new Date(to) < new Date(from)) {
-                alert("To Date must be after From Date!");
-                return;
+            if (dur === 'single') {
+                finalFrom = document.getElementById('singleDate').value;
+                finalTo = finalFrom;
+                days = 1;
+                if (!finalFrom) { alert("Select date!"); return; }
+            } else {
+                finalFrom = document.getElementById('fromDate').value;
+                finalTo = document.getElementById('toDate').value;
+                if (!finalFrom || !finalTo) { alert("Select dates!"); return; }
+                const start = new Date(finalFrom);
+                const end = new Date(finalTo);
+                days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                if (days <= 0) { alert("Invalid date range!"); return; }
             }
-            
-            // Database-la Advisor read panna 'fromDate' matrum 'toDate' rendu node-um anupuroom
+
             const leaveData = {
                 studentID: loggedInID,
                 name: studentDetails.name,
                 dept: studentDetails.dept,
                 year: studentDetails.year,
                 type: document.getElementById('leaveType').value,
-                fromDate: from,
-                toDate: to,
+                fromDate: finalFrom,
+                toDate: finalTo,
+                totalDays: days,
                 reason: document.getElementById('reason').value,
                 status: "Pending",
                 timestamp: new Date().toISOString()
             };
 
-            const newRequestRef = push(ref(db, 'leaverequests'));
-            set(newRequestRef, leaveData).then(() => {
-                msg.style.color = "green";
-                msg.innerText = "Request Sent Successfully!";
+            push(ref(db, 'leaverequests'), leaveData).then(() => {
+                document.getElementById('statusMsg').innerText = "Request Sent Successfully!";
                 document.getElementById('leaveForm').reset();
+                toggleDateFields();
             });
         });
     </script>
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

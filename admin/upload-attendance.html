@@ -1,179 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subject Attendance - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f0f7f7; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #008080; text-align: center; margin-bottom: 25px; }
-        
-        .filter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #eef7f7; padding: 15px; border-radius: 10px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #444; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; box-sizing: border-box; }
-        
-        .btn-fetch { width: 100%; background: #008080; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-fetch:hover { background: #006666; }
-        
-        .student-list { margin-top: 25px; display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
-        th { background: #008080; color: white; }
-        
-        .status-select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-weight: bold; width: 100%; }
-        .status-select.present { color: #27ae60; }
-        .status-select.absent { color: #e74c3c; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-        .btn-save { background: #2ecc71; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: block; margin: 20px auto 0; width: 100%; font-size: 16px; }
-        .loading { text-align: center; display: none; margin: 20px; }
+        body {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-light);
+        }
+
+        h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Updated Grid for more fields */
+        .filter-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--primary);
+            background: var(--card-bg-light);
+        }
+
+        .btn-fetch {
+            grid-column: span 3;
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-fetch:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .student-list {
+            margin-top: 25px;
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: transparent;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            text-align: left;
+            color: var(--text-light);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+        }
+
+        .status-select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid var(--border-light);
+            font-weight: bold;
+            width: 100%;
+            background: var(--card-bg-light);
+            color: var(--text-light);
+        }
+
+        .status-select.present {
+            color: #27ae60;
+        }
+
+        .status-select.absent {
+            color: #e74c3c;
+        }
+
+        .btn-save {
+            background: #2ecc71;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin-top: 20px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .btn-save:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Bar */
     </style>
 </head>
+
 <body>
+    <div class="dynamic-bg"></div>
 
-<div class="container">
-    <h2><i class="fas fa-user-check"></i> Subject-Wise Attendance</h2>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 style="margin: 0;"><i class="fas fa-user-check"></i> Internal Attendance Upload</h2>
+        </div>
 
-    <div class="filter-section">
-        <div>
-            <label>Department</label>
-            <select id="targetDept">
-                <option value="IT">IT</option>
-                <option value="CSE">CSE</option>
-                <option value="ECE">ECE</option>
-                <option value="EEE">EEE</option>
-                <option value="MECH">MECH</option>
-                <option value="CIVIL">CIVIL</option>
-            </select>
+        <div class="filter-section">
+            <div>
+                <label>Department</label>
+                <select id="targetDept">
+                    <option value="IT">IT</option>
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="MECH">MECH</option>
+                    <option value="CIVIL">CIVIL</option>
+                </select>
+            </div>
+            <div>
+                <label>Year</label>
+                <select id="targetYear">
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Semester</label>
+                <select id="targetSem">
+                    <option value="Sem 1">Semester 1</option>
+                    <option value="Sem 2">Semester 2</option>
+                    <option value="Sem 3">Semester 3</option>
+                    <option value="Sem 4">Semester 4</option>
+                    <option value="Sem 5">Semester 5</option>
+                    <option value="Sem 6">Semester 6</option>
+                    <option value="Sem 7">Semester 7</option>
+                    <option value="Sem 8">Semester 8</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Subject Name</label>
+                <input type="text" id="subjectName" placeholder="e.g. Java, OS...">
+            </div>
+
+            <div>
+                <label>Internal Type</label>
+                <select id="internalType">
+                    <option value="Internal 1">Internal 1</option>
+                    <option value="Internal 2">Internal 2</option>
+
+                </select>
+            </div>
+
+            <div>
+                <label>Date</label>
+                <input type="date" id="attDate">
+            </div>
+
+            <button class="btn-fetch" onclick="fetchStudents()">Get Student List</button>
         </div>
-        <div>
-            <label>Year</label>
-            <select id="targetYear">
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-            </select>
+
+        <div id="studentArea" class="student-list">
+            <h4 id="displayInfo" style="margin-bottom: 10px; color: #008080;"></h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Attendance Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody"></tbody>
+            </table>
+            <button class="btn-save" onclick="saveAttendance()">Submit Attendance Data</button>
         </div>
-        <div>
-            <label>Subject Name</label>
-            <input type="text" id="subjectName" placeholder="e.g. Mathematics, OS...">
-        </div>
-        <div>
-            <label>Date</label>
-            <input type="date" id="attDate">
-        </div>
-        <button class="btn-fetch" style="grid-column: span 2;" onclick="fetchStudents()">Get Student List</button>
     </div>
 
-    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin fa-2x" style="color: #008080;"></i></div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    <div id="studentArea" class="student-list">
-        <h4 id="displayInfo" style="margin-bottom: 10px; color: #008080;"></h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Roll No</th>
-                    <th>Name</th>
-                    <th>Attendance Status</th>
-                </tr>
-            </thead>
-            <tbody id="studentTableBody"></tbody>
-        </table>
-        <button class="btn-save" onclick="saveAttendance()">Submit Attendance</button>
-    </div>
-</div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
+            authDomain: "college-connect-2cd42.firebaseapp.com",
+            databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "college-connect-2cd42",
+            storageBucket: "college-connect-2cd42.firebasestorage.app",
+            messagingSenderId: "16394931571",
+            appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
+        };
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
-        authDomain: "college-connect-2cd42.firebaseapp.com",
-        databaseURL: "https://college-connect-2cd42-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "college-connect-2cd42",
-        storageBucket: "college-connect-2cd42.firebasestorage.app",
-        messagingSenderId: "16394931571",
-        appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
-    };
+        window.fetchStudents = async function () {
+            const dept = document.getElementById('targetDept').value;
+            const year = document.getElementById('targetYear').value;
+            const subject = document.getElementById('subjectName').value.trim();
+            const sem = document.getElementById('targetSem').value;
+            const internal = document.getElementById('internalType').value;
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+            if (!subject) { alert("Subject Name enter pannunga!"); return; }
 
-    window.fetchStudents = async function() {
-        const dept = document.getElementById('targetDept').value;
-        const year = document.getElementById('targetYear').value;
-        const date = document.getElementById('attDate').value;
-        const subject = document.getElementById('subjectName').value.trim();
+            const studentArea = document.getElementById('studentArea');
+            const tableBody = document.getElementById('studentTableBody');
+            tableBody.innerHTML = "";
 
-        if(!date || !subject) { alert("Date matrum Subject enter pannunga!"); return; }
+            document.getElementById('displayInfo').innerText = `${dept} - Year ${year} | ${subject} (${sem} - ${internal})`;
 
-        const loading = document.getElementById('loading');
-        const studentArea = document.getElementById('studentArea');
-        const tableBody = document.getElementById('studentTableBody');
-
-        loading.style.display = 'block';
-        studentArea.style.display = 'none';
-        tableBody.innerHTML = "";
-        document.getElementById('displayInfo').innerText = `${subject} | ${date}`;
-
-        try {
-            const snapshot = await get(ref(db, 'users'));
-            if (snapshot.exists()) {
-                let found = false;
-                snapshot.forEach((child) => {
-                    const user = child.val();
-                    const sID = child.key;
-
-                    if (user.role === 'student' && user.dept === dept && user.year.toString() === year) {
-                        found = true;
-                        tableBody.innerHTML += `
-                            <tr data-id="${sID}">
-                                <td>${sID}</td>
+            try {
+                const snapshot = await get(ref(db, 'users'));
+                if (snapshot.exists()) {
+                    let found = false;
+                    snapshot.forEach((child) => {
+                        const user = child.val();
+                        if (user.role === 'student' && user.dept === dept && user.year.toString() === year) {
+                            found = true;
+                            tableBody.innerHTML += `
+                            <tr data-id="${child.key}">
+                                <td>${child.key}</td>
                                 <td>${user.name}</td>
                                 <td>
-                                    <select class="status-select" onchange="this.className='status-select ' + this.value.toLowerCase()">
-                                        <option value="Present" class="present">Present</option>
-                                        <option value="Absent" class="absent">Absent</option>
+                                    <select class="status-select">
+                                        <option value="Present">Present</option>
+                                        <option value="Absent">Absent</option>
                                     </select>
                                 </td>
                             </tr>`;
-                    }
-                });
+                        }
+                    });
 
-                if (found) { studentArea.style.display = 'block'; }
-                else { alert("No students found!"); }
-            }
-        } catch (e) { alert("Error loading students!"); }
-        loading.style.display = 'none';
-    }
+                    if (found) { studentArea.style.display = 'block'; }
+                    else { alert("No Students in this year/department!"); }
+                }
+            } catch (e) { alert("Error loading students!"); }
+        }
 
-    window.saveAttendance = async function() {
-        const date = document.getElementById('attDate').value;
-        const subject = document.getElementById('subjectName').value.trim();
-        const rows = document.querySelectorAll('#studentTableBody tr');
-        const updates = {};
+        window.saveAttendance = async function () {
+            const subject = document.getElementById('subjectName').value.trim();
+            const sem = document.getElementById('targetSem').value;
+            const internal = document.getElementById('internalType').value;
+            const date = document.getElementById('attDate').value || new Date().toLocaleDateString();
 
-        rows.forEach(row => {
-            const sID = row.getAttribute('data-id');
-            const status = row.querySelector('.status-select').value;
-            
-            // New Subject-Wise Structure: attendance/StudentID/SubjectName/Date
-            updates[`attendance/${sID}/${subject}/${date}`] = {
-                status: status,
-                timestamp: Date.now()
-            };
-        });
+            const rows = document.querySelectorAll('#studentTableBody tr');
+            const updates = {};
 
-        try {
-            await update(ref(db), updates);
-            alert("Subject Attendance Saved!");
-            location.reload();
-        } catch (e) { alert("Save failed!"); }
-    }
-</script>
+            rows.forEach(row => {
+                const sID = row.getAttribute('data-id');
+                const status = row.querySelector('.status-select').value;
+
+                // Refined Database Structure for Internal Tracking [cite: 2026-01-15]
+                // Path: attendance/STUDENTID/SEM/SUBJECT/INTERNAL/DATE
+                const path = `attendance/${sID}/${sem}/${subject}/${internal}/${date}`;
+
+                updates[path] = {
+                    status: status,
+                    uploadedAt: Date.now()
+                };
+            });
+
+            try {
+                await update(ref(db), updates);
+                alert("Attendance successfully uploaded for " + internal);
+                location.reload();
+            } catch (e) { alert("Upload failed!"); }
+        }
+    </script>
+
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

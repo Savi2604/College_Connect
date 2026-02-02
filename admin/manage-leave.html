@@ -1,35 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Leaves - Admin</title>
+    <title>Manage Leaves - Advisor Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
-        h2 { color: #008080; border-bottom: 2px solid #008080; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        
-        .leave-card { 
-            background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid #f39c12;
-            display: flex; justify-content: space-between; align-items: center;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+            color: var(--text-light);
         }
-        
-        .student-info p { margin: 5px 0; font-size: 14px; }
-        .student-id { color: #008080; font-weight: bold; font-size: 16px; }
-        
-        .btn-group { display: flex; gap: 10px; }
-        .approve { color: white; background: #27ae60; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .reject { color: white; background: #e74c3c; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .approve:hover { background: #1e8449; }
-        .reject:hover { background: #c0392b; }
-        
-        #leaveList:empty::after { content: "No pending requests at the moment."; color: #888; display: block; text-align: center; margin-top: 20px; }
+
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .advisor-badge {
+            background: rgba(0, 128, 128, 0.1);
+            color: var(--primary);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border: 1px dashed var(--primary);
+        }
+
+        .leave-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(16px);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-light);
+            border-left-width: 5px;
+        }
+
+        .student-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .student-id {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .days-tag {
+            background: #ff9800;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .approve {
+            color: white;
+            background: #27ae60;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reject {
+            color: white;
+            background: #e74c3c;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body>
 
-    <h2><i class="fas fa-tasks"></i> Pending Leave Requests</h2>
+<body>
+    <div class="dynamic-bg"></div>
+
+    <div
+        style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid var(--primary); margin-bottom: 20px;">
+        <h2 style="border: none; padding: 0; margin: 0;"><i class="fas fa-tasks"></i> Advisor Approval Portal</h2>
+    </div>
+
+    <div id="advisorDetails" class="advisor-badge">
+        <i class="fas fa-user-tie"></i> Checking Advisor Profile...
+    </div>
+
     <div id="leaveList">Loading requests...</div>
 
     <script type="module">
@@ -49,28 +125,37 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Path should match student side: 'leave_requests'
-        const leaveRef = ref(db, 'leave_requests/');
+        const advDept = sessionStorage.getItem("dept") || "IT";
+        const advYear = sessionStorage.getItem("year") || "3";
+        const advName = sessionStorage.getItem("userName") || "Advisor";
+
+        document.getElementById('advisorDetails').innerHTML =
+            `<i class="fas fa-user-tie"></i> Welcome <b>${advName}</b> | Advisor for: <b>${advDept} - Year ${advYear}</b>`;
+
+        const leaveRef = ref(db, 'leaverequests/');
 
         onValue(leaveRef, (snapshot) => {
             const listDiv = document.getElementById('leaveList');
             listDiv.innerHTML = "";
-            
+
+            let count = 0;
+
             if (!snapshot.exists()) {
-                listDiv.innerHTML = "<p style='text-align:center;'>No requests found.</p>";
+                listDiv.innerHTML = "<p style='text-align:center;'>No requests in database.</p>";
                 return;
             }
 
             snapshot.forEach(child => {
                 const data = child.val();
-                // Only show Pending requests for Admin to take action
-                if(data.status === "Pending") {
+
+                if (data.status === "Pending" && data.dept === advDept && data.year === advYear) {
+                    count++;
                     listDiv.innerHTML += `
                         <div class="leave-card">
                             <div class="student-info">
-                                <p class="student-id"><i class="fas fa-user"></i> ${data.studentID || data.studentId}</p>
-                                <p><strong>Type:</strong> ${data.type || 'General'}</p>
-                                <p><strong>Date:</strong> ${data.date}</p>
+                                <p class="student-id"><i class="fas fa-user-graduate"></i> ${data.name} (${data.studentID})</p>
+                                <p><strong>Period:</strong> ${data.fromDate} to ${data.toDate} <span class="days-tag">${data.totalDays} Days</span></p>
+                                <p><strong>Type:</strong> ${data.type}</p>
                                 <p><strong>Reason:</strong> ${data.reason}</p>
                             </div>
                             <div class="btn-group">
@@ -80,18 +165,25 @@
                         </div>`;
                 }
             });
+
+            if (count === 0) {
+                listDiv.innerHTML = "<p style='text-align:center;'>No pending requests for your Department/Year.</p>";
+            }
         });
 
-        window.updateStatus = function(requestId, newStatus) {
-            const requestPath = 'leave_requests/' + requestId;
-            update(ref(db, requestPath), { status: newStatus })
-            .then(() => {
-                alert("Request has been " + newStatus);
-            })
-            .catch((error) => {
-                console.error("Update failed: ", error);
-            });
+        window.updateStatus = function (requestId, newStatus) {
+            update(ref(db, 'leaverequests/' + requestId), { status: newStatus })
+                .then(() => {
+                    alert("Request has been " + newStatus);
+                })
+                .catch((error) => {
+                    console.error("Update failed: ", error);
+                });
         }
     </script>
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>

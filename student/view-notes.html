@@ -1,47 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Materials - GCEE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/modern-ui.css">
     <style>
-        :root { --primary: #008080; --bg: #f8fbfb; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .header h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .info-pill { 
-            display: inline-block; background: white; padding: 8px 15px; 
-            border-radius: 20px; margin: 10px 0; font-weight: bold; color: var(--primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 15px;
         }
-        #notes-container { display: grid; gap: 15px; margin-top: 20px; }
-        .note-card {
-            background: white; padding: 18px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary);
+
+        /* Header Style */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 5px;
+            margin-bottom: 10px;
         }
-        .btn-view {
-            background: var(--primary); color: white; padding: 8px 18px;
-            border-radius: 8px; text-decoration: none; font-weight: bold;
+
+        .page-header h2 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 24px;
         }
-        .no-data { text-align: center; margin-top: 50px; color: #888; }
+
+        .search-container {
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: transparent;
+            padding: 5px 0;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 45px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-light);
+            outline: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: var(--card-bg-light);
+            color: var(--text-light);
+            backdrop-filter: blur(12px);
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        /* Subject Cards */
+        .subject-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .subject-card {
+            background: var(--card-bg-light);
+            padding: 22px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-light);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(12px);
+            transition: all 0.2s ease;
+        }
+
+        .subject-card i {
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .subject-card:active {
+            transform: scale(0.98);
+        }
+
+        .subject-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Action Sheet / Popup */
+        .action-sheet-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: flex-end;
+            backdrop-filter: blur(3px);
+        }
+
+        .action-sheet {
+            background: var(--card-bg-light);
+            width: 100%;
+            border-radius: 25px 25px 0 0;
+            padding: 25px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+            box-sizing: border-box;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .sheet-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 10px;
+        }
+
+        .category-header {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-light);
+            opacity: 0.7;
+            text-transform: uppercase;
+            margin: 20px 0 10px 5px;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+
+        .file-list {
+            margin-bottom: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 600;
+            border: 1px solid var(--border-light);
+        }
+
+        .file-item:hover {
+            border-color: var(--primary);
+            background: transparent;
+        }
+
+        .file-item:active {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+        }
+
+        .file-info i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .download-icon {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .no-file-msg {
+            padding: 12px;
+            font-size: 14px;
+            color: var(--text-light);
+            opacity: 0.6;
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+            border: 1px dashed var(--border-light);
+        }
+
+        .btn-close {
+            width: 100%;
+            padding: 18px;
+            margin-top: 15px;
+            border: none;
+            background: transparent;
+            color: #ef4444;
+            font-weight: bold;
+            cursor: pointer;
+            border-top: 1px solid var(--border-light);
+            font-size: 16px;
+        }
     </style>
 </head>
-<body>
 
-    <div class="header">
-        <h2><i class="fas fa-book"></i> My Study Materials</h2>
-        <div class="info-pill" id="profile-info">Syncing with IT - Year 3...</div>
+<body>
+    <div class="dynamic-bg"></div>
+
+    <div class="page-header">
+        <i class="fas fa-book-reader" style="color: var(--primary); font-size: 26px;"></i>
+        <h2>Study Materials</h2>
     </div>
 
-    <div id="notes-container">
-        <p style="text-align: center;">Searching for materials...</p>
+    <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="subjectSearch" class="search-box" placeholder="Search subject name..."
+            onkeyup="filterSubjects()">
+    </div>
+
+    <div id="subject-grid" class="subject-grid">
+        <p style="text-align: center; color: #94a3b8; margin-top: 40px;">Fetching Subjects...</p>
+    </div>
+
+    <div id="actionSheetOverlay" class="action-sheet-overlay" onclick="closeSheet()">
+        <div class="action-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-title" id="sheetSubjectName">Subject Details</div>
+            <div id="optionsContainer"></div>
+            <button class="btn-close" onclick="closeSheet()">Close</button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // Your Config [cite: 2026-01-15]
         const firebaseConfig = {
             apiKey: "AIzaSyAZOJh_a5oDaKluV3IU6Ly2o7PlTlSEbhQ",
             authDomain: "college-connect-2cd42.firebaseapp.com",
@@ -51,53 +269,94 @@
             messagingSenderId: "16394931571",
             appId: "1:16394931571:web:38b8abc12ec26d7dc50906"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Force Testing: Unga database-la irukura sariyaana values inga podunga
-        const TEST_DEPT = "IT"; 
-        const TEST_YEAR = "3"; 
-
-        function loadNotes() {
-            const container = document.getElementById('notes-container');
-            const infoDiv = document.getElementById('profile-info');
-
-            // Notes fetch panna direct logic
-            const notesRef = ref(db, 'study_materials');
-            
-            onValue(notesRef, (snapshot) => {
-                container.innerHTML = "";
-                let found = false;
-
-                if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const data = child.val();
-                        
-                        // Firebase-la irukura Dept and Year check
-                        if (data.dept === TEST_DEPT && data.year.toString() === TEST_YEAR) {
-                            found = true;
-                            container.innerHTML += `
-                                <div class="note-card">
-                                    <div>
-                                        <b style="font-size:17px;">${data.subject}</b><br>
-                                        <small style="color:#666;">${data.date} • ${data.dept}</small>
-                                    </div>
-                                    <a href="${data.fileUrl}" target="_blank" class="btn-view">View</a>
-                                </div>`;
-                        }
-                    });
-                }
-
-                infoDiv.innerText = `Subject List for ${TEST_DEPT} - Year ${TEST_YEAR}`;
-
-                if (!found) {
-                    container.innerHTML = `<div class="no-data">No notes found for ${TEST_DEPT} Year ${TEST_YEAR}</div>`;
-                }
-            });
+        const studentID = sessionStorage.getItem("studentID") || sessionStorage.getItem("userId");
+        if (!studentID) {
+            window.location.replace("../login.html");
         }
 
-        loadNotes();
+        const MY_DEPT = sessionStorage.getItem("dept") || "IT";
+        const MY_YEAR = sessionStorage.getItem("year") || "3";
+
+        onValue(ref(db, 'study_materials'), (snapshot) => {
+            const grid = document.getElementById('subject-grid');
+            grid.innerHTML = "";
+            const allData = snapshot.val() || {};
+            const grouped = {};
+
+            // Processing ALL files [cite: 2026-01-15]
+            Object.values(allData).forEach(item => {
+                if (item.dept === MY_DEPT && item.year.toString() === MY_YEAR) {
+                    const subName = item.subject.split(' - ')[0];
+                    const fileName = item.subject.split(' - ')[1] || "Material File";
+
+                    if (!grouped[subName]) {
+                        grouped[subName] = { "Notes": [], "Syllabus": [], "Question Paper": [] };
+                    }
+
+                    if (grouped[subName][item.type]) {
+                        grouped[subName][item.type].push({ name: fileName, url: item.fileUrl });
+                    }
+                }
+            });
+
+            if (Object.keys(grouped).length === 0) {
+                grid.innerHTML = "<p style='text-align:center; padding:50px; color:#999;'>No materials found for your year/dept.</p>";
+                return;
+            }
+
+            Object.keys(grouped).forEach(sub => {
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.innerHTML = `<i class="fas fa-folder-open"></i> ${sub}`;
+                card.onclick = () => openSheet(sub, grouped[sub]);
+                grid.appendChild(card);
+            });
+        });
+
+        // Open Sheet with ALL categories visible [cite: 2026-01-15]
+        window.openSheet = (name, data) => {
+            document.getElementById('sheetSubjectName').innerText = name;
+            let html = "";
+            const categories = ["Notes", "Syllabus", "Question Paper"];
+
+            categories.forEach(cat => {
+                const files = data[cat] || [];
+                html += `<span class="category-header">${cat} (${files.length})</span><div class="file-list">`;
+
+                if (files.length > 0) {
+                    files.forEach(file => {
+                        html += `
+                            <a href="${file.url}" target="_blank" class="file-item">
+                                <div class="file-info"><i class="far fa-file-pdf"></i> ${file.name}</div>
+                                <i class="fas fa-arrow-circle-down download-icon"></i>
+                            </a>`;
+                    });
+                } else {
+                    html += `<div class="no-file-msg">No ${cat} uploaded for this subject.</div>`;
+                }
+                html += `</div>`;
+            });
+
+            document.getElementById('optionsContainer').innerHTML = html;
+            document.getElementById('actionSheetOverlay').style.display = 'flex';
+        };
+
+        window.closeSheet = () => document.getElementById('actionSheetOverlay').style.display = 'none';
+
+        window.filterSubjects = function () {
+            const input = document.getElementById('subjectSearch').value.toLowerCase();
+            const cards = document.getElementsByClassName('subject-card');
+            Array.from(cards).forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(input) ? "flex" : "none";
+            });
+        };
     </script>
+
+
+    <script src="../js/ui.js"></script>
 </body>
+
 </html>
